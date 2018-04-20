@@ -1,0 +1,60 @@
+###############
+### Android ###
+###############
+*.apk
+*.ap_
+*.class
+*.dex
+*.iml
+*.iws
+*.log
+/.gradle
+/.idea/*.xml
+/.idea/*/*
+/.navigation
+/bin
+/build
+/captures
+/gen
+/out
+/proguard
+local.properties
+keys.xml
+
+
+###############
+### Windows ###
+###############
+$RECYCLE.BIN/
+*.cab
+*.lnk
+*.msi
+*.msm
+*.msp
+Desktop.ini
+ehthumbs.db
+Thumbs.db
+
+
+###############
+###  Linux  ###
+###############
+*~
+.directory
+.fuse_hidden*
+.Trash-*
+
+
+###############
+###  MacOS  ###
+###############
+._*
+.AppleDouble
+*.DS_Store
+.LSOverride
+
+
+########################
+###  Java Key Store  ###
+########################
+*.jks

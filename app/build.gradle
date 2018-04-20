@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+apply from: "${rootDir}/tools/script-git-version.gradle"
+
+def versionMajor = Integer.parseInt(VERSION_MAJOR)
+def versionMinor = Integer.parseInt(VERSION_MINOR)
+def versionPatch = Integer.parseInt(VERSION_PATCH)
+def versionBuild = Integer.parseInt(VERSION_BUILD)
+
+android {
+
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+
+    defaultConfig {
+        applicationId "ru.annin.gallerytestassignment"
+        minSdkVersion 14
+        targetSdkVersion 27
+
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+
+        resConfigs "ru"
+        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            versionNameSuffix "-${gitRevision}"
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.all { variant ->
+        File outDir = file("${rootDir}/out/${variant.buildType.name}")
+        if (!outDir.exists()) {outDir.mkdirs()}
+        variant.assemble.doLast {
+            variant.outputs.each { output ->
+                File apkFile = output.outputFile
+                copy {
+                    from apkFile
+                    into outDir
+                    rename { fileName -> "GalleryTestAssignment_v${variant.versionName}.${variant.versionCode}.apk" }
+                }
+            }
+        }
+    }
+
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
+        jumboMode = true
+    }
+
+    task('increaseVersionBuild') << {
+        ant.propertyfile(file: "../gradle.properties") {
+            versionPatch = versionPatch + 1
+            entry(key: "VERSION_PATCH", value: versionPatch)
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Android Support Library
+    implementation group: 'com.android.support', name: 'appcompat-v7', version: supportLibraryVersion
+    implementation group: 'com.android.support', name: 'recyclerview-v7', version: supportLibraryVersion
+    implementation group: 'com.android.support', name: 'support-annotations', version: supportLibraryVersion
+    implementation group: 'com.android.support.constraint', name: 'constraint-layout', version: constraintLayoutVersion
+
+    // Test's
+    testImplementation group: 'junit', name: 'junit', version: junitVersion
+    androidTestImplementation group: 'com.android.support.test', name: 'runner', version: supportTestRunner
+    androidTestImplementation group: 'com.android.support.test.espresso', name: 'espresso-core', version: espressoVersion
+}

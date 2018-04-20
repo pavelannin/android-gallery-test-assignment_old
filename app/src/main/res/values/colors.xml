@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <color name="primary">@color/lynch</color>
+    <color name="primary_dark">@color/fiord</color>
+    <color name="primary_light">@color/geyser</color>
+    <color name="accent">@color/orange_peel</color>
+
+    <color name="text_primary">@color/mine_shaft</color>
+    <color name="text_secondary">@color/boulder</color>
+
+    <color name="lynch">#607D8B</color>
+    <color name="fiord">#455A64</color>
+    <color name="geyser">#CFD8DC</color>
+    <color name="orange_peel">#FF9800</color>
+    <color name="boulder">#757575</color>
+    <color name="mine_shaft">#212121</color>
+    <color name="white">#FFFFFF</color>
+    <color name="silver">#BDBDBD</color>
+</resources>
