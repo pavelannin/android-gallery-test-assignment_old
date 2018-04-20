@@ -5,6 +5,7 @@ buildscript {
         constraintLayoutVersion = '1.1.0'
         daggerVersion = '2.15'
         timberVersion = '4.7.0'
+        leakcanaryVersion = '1.5.4'
         junitVersion = '4.12'
         supportTestRunner = '1.0.1'
         espressoVersion = '3.0.1'

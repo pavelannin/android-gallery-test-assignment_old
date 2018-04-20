@@ -27,6 +27,8 @@ package ru.annin.gallerytestassignment;
 import android.app.Activity;
 import android.app.Application;
 
+import com.squareup.leakcanary.LeakCanary;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
@@ -46,6 +48,8 @@ public class GalleryApplication extends Application implements HasActivityInject
     @Override
     public void onCreate() {
         super.onCreate();
+        if (LeakCanary.isInAnalyzerProcess(this)) return;
+        LeakCanary.install(this);
         LogFactory.initializtion(BuildConfig.DEBUG);
         DaggerApplicationComponent.builder()
                 .create(this)

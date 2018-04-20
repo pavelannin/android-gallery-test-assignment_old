@@ -87,6 +87,10 @@ dependencies {
     annotationProcessor  group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
     annotationProcessor  group: 'com.google.dagger', name: 'dagger-android-processor', version: daggerVersion
 
+    // Leak Memory
+    debugImplementation group: 'com.squareup.leakcanary', name: 'leakcanary-android', version: leakcanaryVersion
+    releaseImplementation group: 'com.squareup.leakcanary', name: 'leakcanary-android-no-op', version: leakcanaryVersion
+
     // Logger
     implementation group: 'com.jakewharton.timber', name: 'timber', version: timberVersion
 
