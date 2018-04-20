@@ -80,6 +80,13 @@ dependencies {
     implementation group: 'com.android.support', name: 'support-annotations', version: supportLibraryVersion
     implementation group: 'com.android.support.constraint', name: 'constraint-layout', version: constraintLayoutVersion
 
+    // Dagger 2
+    api group: 'com.google.dagger', name: 'dagger', version: daggerVersion
+    implementation group: 'com.google.dagger', name: 'dagger-android', version: daggerVersion
+    implementation group: 'com.google.dagger', name: 'dagger-android-support', version: daggerVersion
+    annotationProcessor  group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+    annotationProcessor  group: 'com.google.dagger', name: 'dagger-android-processor', version: daggerVersion
+
     // Test's
     testImplementation group: 'junit', name: 'junit', version: junitVersion
     androidTestImplementation group: 'com.android.support.test', name: 'runner', version: supportTestRunner
