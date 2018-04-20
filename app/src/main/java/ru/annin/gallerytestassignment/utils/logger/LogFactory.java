@@ -22,38 +22,20 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment;
+package ru.annin.gallerytestassignment.utils.logger;
 
-import android.app.Activity;
-import android.app.Application;
-
-import javax.inject.Inject;
-
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
-import ru.annin.gallerytestassignment.di.DaggerApplicationComponent;
-import ru.annin.gallerytestassignment.utils.logger.LogFactory;
+import timber.log.Timber;
 
 /**
  * @author Pavel Annin.
  */
-public class GalleryApplication extends Application implements HasActivityInjector {
+public class LogFactory {
 
-    @Inject
-    DispatchingAndroidInjector<Activity> activityInjector;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        LogFactory.initializtion(BuildConfig.DEBUG);
-        DaggerApplicationComponent.builder()
-                .create(this)
-                .inject(this);
-    }
-
-    @Override
-    public AndroidInjector<Activity> activityInjector() {
-        return activityInjector;
+    public static void initializtion(boolean isDebugging) {
+        if (isDebugging) {
+            Timber.plant(new DebugLogTree());
+        } else {
+            Timber.plant(new ReleaseLogTree());
+        }
     }
 }

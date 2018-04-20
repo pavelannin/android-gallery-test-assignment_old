@@ -87,6 +87,9 @@ dependencies {
     annotationProcessor  group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
     annotationProcessor  group: 'com.google.dagger', name: 'dagger-android-processor', version: daggerVersion
 
+    // Logger
+    implementation group: 'com.jakewharton.timber', name: 'timber', version: timberVersion
+
     // Test's
     testImplementation group: 'junit', name: 'junit', version: junitVersion
     androidTestImplementation group: 'com.android.support.test', name: 'runner', version: supportTestRunner
