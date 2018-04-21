@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply from: "${rootDir}/tools/script-git-version.gradle"
+apply from: "${rootDir}/configuration/api-contract.gradle"
 
 def versionMajor = Integer.parseInt(VERSION_MAJOR)
 def versionMinor = Integer.parseInt(VERSION_MINOR)
@@ -22,6 +23,9 @@ android {
         resConfigs "ru"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "PEXELS_BASE_URL", pexelsBaseUrl
+        buildConfigField "String", "PEXELS_TOKEN", pexelsToken
     }
 
     buildTypes {
@@ -84,8 +88,8 @@ dependencies {
     api group: 'com.google.dagger', name: 'dagger', version: daggerVersion
     implementation group: 'com.google.dagger', name: 'dagger-android', version: daggerVersion
     implementation group: 'com.google.dagger', name: 'dagger-android-support', version: daggerVersion
-    annotationProcessor  group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-    annotationProcessor  group: 'com.google.dagger', name: 'dagger-android-processor', version: daggerVersion
+    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+    annotationProcessor group: 'com.google.dagger', name: 'dagger-android-processor', version: daggerVersion
 
     // Leak Memory
     debugImplementation group: 'com.squareup.leakcanary', name: 'leakcanary-android', version: leakcanaryVersion
@@ -93,6 +97,13 @@ dependencies {
 
     // Logger
     implementation group: 'com.jakewharton.timber', name: 'timber', version: timberVersion
+
+    // Rest Api
+    implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: okhttp3Version
+    implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: retrofitVersion
+    implementation group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: retrofitVersion
+    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: retrofitVersion
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
 
     // Test's
     testImplementation group: 'junit', name: 'junit', version: junitVersion

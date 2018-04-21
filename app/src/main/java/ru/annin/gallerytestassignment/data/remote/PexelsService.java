@@ -22,35 +22,23 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.di;
+package ru.annin.gallerytestassignment.data.remote;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import ru.annin.gallerytestassignment.BuildConfig;
-import ru.annin.gallerytestassignment.GalleryApplication;
-import ru.annin.gallerytestassignment.data.remote.PexelApi;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+import ru.annin.gallerytestassignment.data.remote.response.PhotosResponse;
 
 /**
  * @author Pavel Annin.
  */
-@Module
-public class ApplicationModule {
+interface PexelsService {
 
-    @Provides
     @NonNull
-    public Context provideContext(@NonNull GalleryApplication application) {
-        return application.getApplicationContext();
-    }
-
-    @Provides
-    @Singleton
-    @NonNull
-    public PexelApi providePexelsApi() {
-        return new PexelApi(BuildConfig.DEBUG, BuildConfig.PEXELS_BASE_URL, BuildConfig.PEXELS_TOKEN);
-    }
+    @GET(value = "search")
+    Call<PhotosResponse> getPhotos(@Query(value = "query") @NonNull String query,
+                                   @Query(value = "per_page") int perPage,
+                                   @Query(value = "page") int page);
 }

@@ -1,4 +1,10 @@
 ###############
+### Project ###
+###############
+/configuration/api-contract.gradle
+
+
+###############
 ### Android ###
 ###############
 *.apk
