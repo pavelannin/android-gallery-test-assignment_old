@@ -22,44 +22,17 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.di;
+package ru.annin.gallerytestassignment.data.repository;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import ru.annin.gallerytestassignment.BuildConfig;
-import ru.annin.gallerytestassignment.GalleryApplication;
-import ru.annin.gallerytestassignment.data.remote.PexelApi;
-import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
-import ru.annin.gallerytestassignment.data.repository.inMemory.PhotoByPageRepository;
+import ru.annin.gallerytestassignment.data.entity.Photo;
 
 /**
  * @author Pavel Annin.
  */
-@Module
-public class ApplicationModule {
+public interface PhotoRepository {
 
-    @Provides
     @NonNull
-    public Context provideContext(@NonNull GalleryApplication application) {
-        return application.getApplicationContext();
-    }
-
-    @Provides
-    @Singleton
-    @NonNull
-    public PexelApi providePexelsApi() {
-        return new PexelApi(BuildConfig.DEBUG, BuildConfig.PEXELS_BASE_URL, BuildConfig.PEXELS_TOKEN);
-    }
-
-    @Provides
-    @Singleton
-    @NonNull
-    public PhotoRepository providPhotoRepository(@NonNull PexelApi api) {
-        return new PhotoByPageRepository(api);
-    }
+    Listing<Photo> listPhoto(@NonNull String query, int pageSize);
 }

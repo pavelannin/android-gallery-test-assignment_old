@@ -22,44 +22,39 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.di;
+package ru.annin.gallerytestassignment.data.repository.inMemory;
 
-import android.content.Context;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.paging.DataSource;
 import android.support.annotation.NonNull;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import ru.annin.gallerytestassignment.BuildConfig;
-import ru.annin.gallerytestassignment.GalleryApplication;
+import ru.annin.gallerytestassignment.data.entity.Photo;
 import ru.annin.gallerytestassignment.data.remote.PexelApi;
-import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
-import ru.annin.gallerytestassignment.data.repository.inMemory.PhotoByPageRepository;
 
 /**
  * @author Pavel Annin.
  */
-@Module
-public class ApplicationModule {
+public class PhotoDataSourceFactory extends DataSource.Factory<Integer, Photo> {
 
-    @Provides
-    @NonNull
-    public Context provideContext(@NonNull GalleryApplication application) {
-        return application.getApplicationContext();
+    private final PexelApi api;
+    private final String query;
+    private final MutableLiveData<PhotoPageDataSource> sourceLiveData;
+
+    PhotoDataSourceFactory(@NonNull PexelApi api, @NonNull String query) {
+        this.api = api;
+        this.query = query;
+        sourceLiveData = new MutableLiveData<>();
     }
 
-    @Provides
-    @Singleton
-    @NonNull
-    public PexelApi providePexelsApi() {
-        return new PexelApi(BuildConfig.DEBUG, BuildConfig.PEXELS_BASE_URL, BuildConfig.PEXELS_TOKEN);
+    @Override
+    public DataSource<Integer, Photo> create() {
+        final PhotoPageDataSource source = new PhotoPageDataSource(api, query);
+        sourceLiveData.postValue(source);
+        return source;
     }
 
-    @Provides
-    @Singleton
     @NonNull
-    public PhotoRepository providPhotoRepository(@NonNull PexelApi api) {
-        return new PhotoByPageRepository(api);
+    public MutableLiveData<PhotoPageDataSource> getSourceLiveData() {
+        return sourceLiveData;
     }
 }

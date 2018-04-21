@@ -3,6 +3,8 @@ buildscript {
     ext {
         supportLibraryVersion = '27.1.1'
         constraintLayoutVersion = '1.1.0'
+        architectureComponentsVersion = "1.1.1"
+        architectureComponentsPagingVersion = "1.0.0-alpha7"
         retrofitVersion = '2.4.0'
         jacksonVersion = '2.9.5'
         okhttp3Version = '3.10.0'

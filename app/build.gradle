@@ -84,6 +84,11 @@ dependencies {
     implementation group: 'com.android.support', name: 'support-annotations', version: supportLibraryVersion
     implementation group: 'com.android.support.constraint', name: 'constraint-layout', version: constraintLayoutVersion
 
+    // Architecture Components
+    implementation group: 'android.arch.lifecycle', name: 'extensions', version: architectureComponentsVersion
+    implementation group: 'android.arch.paging', name: 'runtime', version: architectureComponentsPagingVersion
+    annotationProcessor group: 'android.arch.lifecycle', name: 'compiler', version: architectureComponentsVersion
+
     // Dagger 2
     api group: 'com.google.dagger', name: 'dagger', version: daggerVersion
     implementation group: 'com.google.dagger', name: 'dagger-android', version: daggerVersion
@@ -101,7 +106,6 @@ dependencies {
     // Rest Api
     implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: okhttp3Version
     implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: retrofitVersion
-    implementation group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: retrofitVersion
     implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: retrofitVersion
     api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
 
