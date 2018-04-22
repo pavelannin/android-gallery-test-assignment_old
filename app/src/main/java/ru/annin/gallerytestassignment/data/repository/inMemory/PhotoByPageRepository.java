@@ -32,7 +32,7 @@ import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 
 import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.remote.PexelApi;
+import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
 import ru.annin.gallerytestassignment.data.repository.Listing;
 import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
 
@@ -41,9 +41,9 @@ import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
  */
 public class PhotoByPageRepository implements PhotoRepository {
 
-    private final PexelApi api;
+    private final UnsplashApi api;
 
-    public PhotoByPageRepository(@NonNull PexelApi api) {
+    public PhotoByPageRepository(@NonNull UnsplashApi api) {
         this.api = api;
     }
 

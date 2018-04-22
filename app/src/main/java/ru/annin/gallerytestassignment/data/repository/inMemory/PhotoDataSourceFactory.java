@@ -29,18 +29,18 @@ import android.arch.paging.DataSource;
 import android.support.annotation.NonNull;
 
 import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.remote.PexelApi;
+import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
 
 /**
  * @author Pavel Annin.
  */
 public class PhotoDataSourceFactory extends DataSource.Factory<Integer, Photo> {
 
-    private final PexelApi api;
+    private final UnsplashApi api;
     private final String query;
     private final MutableLiveData<PhotoPageDataSource> sourceLiveData;
 
-    PhotoDataSourceFactory(@NonNull PexelApi api, @NonNull String query) {
+    PhotoDataSourceFactory(@NonNull UnsplashApi api, @NonNull String query) {
         this.api = api;
         this.query = query;
         sourceLiveData = new MutableLiveData<>();

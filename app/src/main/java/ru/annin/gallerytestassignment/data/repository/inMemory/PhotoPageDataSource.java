@@ -32,7 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.remote.PexelApi;
+import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
 import ru.annin.gallerytestassignment.data.remote.response.PhotosResponse;
 import ru.annin.gallerytestassignment.data.repository.NetworkState;
 
@@ -41,13 +41,13 @@ import ru.annin.gallerytestassignment.data.repository.NetworkState;
  */
 public class PhotoPageDataSource extends PageKeyedDataSource<Integer, Photo> {
 
-    private final PexelApi api;
+    private final UnsplashApi api;
     private final String query;
     private final MutableLiveData<NetworkState> initialLoad;
     private final MutableLiveData<NetworkState> networkState;
     private Runnable retry;
 
-    PhotoPageDataSource(@NonNull PexelApi api, @NonNull String query) {
+    PhotoPageDataSource(@NonNull UnsplashApi api, @NonNull String query) {
         this.api = api;
         this.query = query;
         networkState = new MutableLiveData<>();

@@ -28,6 +28,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -37,6 +38,7 @@ import ru.annin.gallerytestassignment.data.entity.Photo;
 /**
  * @author Pavel Annin.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PhotosResponse implements Parcelable {
 
     public static final Parcelable.Creator<PhotosResponse> CREATOR = new Parcelable.Creator<PhotosResponse>() {
@@ -51,42 +53,27 @@ public class PhotosResponse implements Parcelable {
         }
     };
 
-    @JsonProperty(value = "page", required = true)
-    private int page;
+    @JsonProperty(value = "total", required = true)
+    private int total;
 
-    @JsonProperty(value = "per_page", required = true)
-    private int perPage;
+    @JsonProperty(value = "total_pages", required = true)
+    private int totalPages;
 
-    @JsonProperty(value = "total_results", required = true)
-    private int totalResults;
-
-    @JsonProperty(value = "url", required = true)
-    private String url;
-
-    @JsonProperty(value = "next_page", required = true)
-    private String nextPage;
-
-    @JsonProperty(value = "photos", required = true)
+    @JsonProperty(value = "results", required = true)
     private List<Photo> photos;
 
     public PhotosResponse() { /* Empty constructor. */ }
 
     private PhotosResponse(@NonNull Parcel in) {
-        page = in.readInt();
-        perPage = in.readInt();
-        totalResults = in.readInt();
-        url = in.readString();
-        nextPage = in.readString();
+        total = in.readInt();
+        totalPages = in.readInt();
         photos = in.createTypedArrayList(Photo.CREATOR);
     }
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeInt(page);
-        dest.writeInt(perPage);
-        dest.writeInt(totalResults);
-        dest.writeString(url);
-        dest.writeString(nextPage);
+        dest.writeInt(total);
+        dest.writeInt(totalPages);
         dest.writeTypedList(photos);
     }
 
@@ -95,26 +82,12 @@ public class PhotosResponse implements Parcelable {
         return 0;
     }
 
-    public int getPage() {
-        return page;
+    public int getTotal() {
+        return total;
     }
 
-    public int getPerPage() {
-        return perPage;
-    }
-
-    public int getTotalResults() {
-        return totalResults;
-    }
-
-    @NonNull
-    public String getUrl() {
-        return url;
-    }
-
-    @NonNull
-    public String getNextPage() {
-        return nextPage;
+    public int getTotalPages() {
+        return totalPages;
     }
 
     @NonNull

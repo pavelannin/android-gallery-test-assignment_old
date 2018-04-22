@@ -24,8 +24,8 @@ android {
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "String", "PEXELS_BASE_URL", pexelsBaseUrl
-        buildConfigField "String", "PEXELS_TOKEN", pexelsToken
+        buildConfigField "String", "UNSPLASH_BASE_URL", unsplashBaseUrl
+        buildConfigField "String", "UNSPLASH_TOKEN", unsplashToken
     }
 
     buildTypes {
