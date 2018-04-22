@@ -22,27 +22,29 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.di;
+package ru.annin.gallerytestassignment.presentation.common.viewholder;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
 
-import dagger.Module;
-import dagger.android.ContributesAndroidInjector;
-import ru.annin.gallerytestassignment.presentation.gallery.GalleryModule;
-import ru.annin.gallerytestassignment.presentation.gallery.detail.GalleryDetailActivity;
-import ru.annin.gallerytestassignment.presentation.gallery.list.GalleryListActivity;
+import ru.annin.gallerytestassignment.R;
 
 /**
  * @author Pavel Annin.
  */
-@Module()
-public abstract class ActivitiesModule {
+public class ItemProgressIndicatorViewHolder extends RecyclerView.ViewHolder {
 
-    @ContributesAndroidInjector(modules = GalleryModule.class)
-    @NonNull
-    abstract GalleryListActivity bindGalleryListActivity();
+    // View's
+    private final ProgressBar progressIndicator;
 
-    @ContributesAndroidInjector(modules = GalleryModule.class)
-    @NonNull
-    abstract GalleryDetailActivity bindGalleryDetailActivity();
+    public ItemProgressIndicatorViewHolder(@NonNull View rootView) {
+        super(rootView);
+        progressIndicator = rootView.findViewById(R.id.progress_indicator);
+    }
+
+    public void toggleVisible(boolean isVisible) {
+        progressIndicator.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
 }

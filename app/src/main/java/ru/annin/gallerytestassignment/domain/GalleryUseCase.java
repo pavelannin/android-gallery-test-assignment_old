@@ -22,52 +22,38 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.di;
+package ru.annin.gallerytestassignment.domain;
 
-import android.content.Context;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import ru.annin.gallerytestassignment.BuildConfig;
-import ru.annin.gallerytestassignment.GalleryApplication;
-import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
+import ru.annin.gallerytestassignment.data.entity.Photo;
+import ru.annin.gallerytestassignment.data.repository.Listing;
 import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
-import ru.annin.gallerytestassignment.data.repository.inMemory.PhotoByPageRepository;
-import ru.annin.gallerytestassignment.domain.GalleryUseCase;
 
 /**
  * @author Pavel Annin.
  */
-@Module
-public class ApplicationModule {
+public class GalleryUseCase {
 
-    @Provides
-    @NonNull
-    public Context provideContext(@NonNull GalleryApplication application) {
-        return application.getApplicationContext();
+    private final PhotoRepository photoRepository;
+    private MutableLiveData<Listing<Photo>> listingLiveData;
+
+    public GalleryUseCase(@NonNull PhotoRepository photoRepository) {
+        this.photoRepository = photoRepository;
+        listingLiveData = new MutableLiveData<>();
     }
 
-    @Singleton
-    @Provides
     @NonNull
-    public UnsplashApi provideUnsplashApi() {
-        return new UnsplashApi(BuildConfig.DEBUG, BuildConfig.UNSPLASH_BASE_URL, BuildConfig.UNSPLASH_TOKEN);
+    public LiveData<Listing<Photo>> fetchPhoto(@NonNull String query, int pageSize) {
+        final Listing<Photo> listing = photoRepository.listPhoto(query, pageSize);
+        listingLiveData.postValue(listing);
+        return listingLiveData;
     }
 
-    @Singleton
-    @Provides
     @NonNull
-    public PhotoRepository providePhotoRepository(@NonNull UnsplashApi api) {
-        return new PhotoByPageRepository(api);
-    }
-
-    @Singleton
-    @Provides
-    @NonNull
-    public GalleryUseCase provideGalleryUseCase(@NonNull PhotoRepository photoRepository) {
-        return new GalleryUseCase(photoRepository);
+    public LiveData<Listing<Photo>> getListingLiveData() {
+        return listingLiveData;
     }
 }

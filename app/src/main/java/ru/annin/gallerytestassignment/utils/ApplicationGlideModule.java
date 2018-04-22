@@ -22,27 +22,13 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.di;
+package ru.annin.gallerytestassignment.utils;
 
-import android.support.annotation.NonNull;
-
-import dagger.Module;
-import dagger.android.ContributesAndroidInjector;
-import ru.annin.gallerytestassignment.presentation.gallery.GalleryModule;
-import ru.annin.gallerytestassignment.presentation.gallery.detail.GalleryDetailActivity;
-import ru.annin.gallerytestassignment.presentation.gallery.list.GalleryListActivity;
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.module.AppGlideModule;
 
 /**
  * @author Pavel Annin.
  */
-@Module()
-public abstract class ActivitiesModule {
-
-    @ContributesAndroidInjector(modules = GalleryModule.class)
-    @NonNull
-    abstract GalleryListActivity bindGalleryListActivity();
-
-    @ContributesAndroidInjector(modules = GalleryModule.class)
-    @NonNull
-    abstract GalleryDetailActivity bindGalleryDetailActivity();
-}
+@GlideModule
+public final class ApplicationGlideModule extends AppGlideModule{ /* Empty. */ }

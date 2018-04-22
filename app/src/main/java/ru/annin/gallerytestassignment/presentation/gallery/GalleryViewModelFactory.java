@@ -22,52 +22,37 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.di;
+package ru.annin.gallerytestassignment.presentation.gallery;
 
-import android.content.Context;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import ru.annin.gallerytestassignment.BuildConfig;
-import ru.annin.gallerytestassignment.GalleryApplication;
-import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
-import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
-import ru.annin.gallerytestassignment.data.repository.inMemory.PhotoByPageRepository;
 import ru.annin.gallerytestassignment.domain.GalleryUseCase;
+import ru.annin.gallerytestassignment.presentation.gallery.detail.GalleryDetailViewModel;
+import ru.annin.gallerytestassignment.presentation.gallery.list.GalleryListViewModel;
 
 /**
  * @author Pavel Annin.
  */
-@Module
-public class ApplicationModule {
+public class GalleryViewModelFactory implements ViewModelProvider.Factory {
 
-    @Provides
-    @NonNull
-    public Context provideContext(@NonNull GalleryApplication application) {
-        return application.getApplicationContext();
+    private final GalleryUseCase userCase;
+
+    public GalleryViewModelFactory(@NonNull GalleryUseCase userCase) {
+        this.userCase = userCase;
     }
 
-    @Singleton
-    @Provides
+    @SuppressWarnings("unchecked")
     @NonNull
-    public UnsplashApi provideUnsplashApi() {
-        return new UnsplashApi(BuildConfig.DEBUG, BuildConfig.UNSPLASH_BASE_URL, BuildConfig.UNSPLASH_TOKEN);
-    }
-
-    @Singleton
-    @Provides
-    @NonNull
-    public PhotoRepository providePhotoRepository(@NonNull UnsplashApi api) {
-        return new PhotoByPageRepository(api);
-    }
-
-    @Singleton
-    @Provides
-    @NonNull
-    public GalleryUseCase provideGalleryUseCase(@NonNull PhotoRepository photoRepository) {
-        return new GalleryUseCase(photoRepository);
+    @Override
+    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+        if (modelClass.isAssignableFrom(GalleryListViewModel.class)) {
+            return (T) new GalleryListViewModel(userCase);
+        } else if(modelClass.isAssignableFrom(GalleryDetailViewModel.class)) {
+            return (T) new GalleryDetailViewModel(userCase);
+        } else {
+            throw new IllegalArgumentException(String.format("Unknown view model class: %s", modelClass.getName()));
+        }
     }
 }
