@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ru.annin.gallerytestassignment">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".GalleryApplication"
         android:allowBackup="false"
@@ -18,12 +20,21 @@
         <activity
             android:name=".presentation.splash.SplashActivity"
             android:noHistory="true"
-            android:theme="@style/AppTheme.Splash">
+            android:theme="@style/AppTheme.Splash"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".presentation.gallery.list.GalleryListActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name=".presentation.gallery.detail.GalleryDetailActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
     </application>
 

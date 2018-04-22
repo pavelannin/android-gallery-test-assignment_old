@@ -24,10 +24,25 @@
 
 package ru.annin.gallerytestassignment.di;
 
+import android.support.annotation.NonNull;
+
 import dagger.Module;
+import dagger.android.ContributesAndroidInjector;
+import ru.annin.gallerytestassignment.presentation.gallery.GalleryModule;
+import ru.annin.gallerytestassignment.presentation.gallery.detail.GalleryDetailActivity;
+import ru.annin.gallerytestassignment.presentation.gallery.list.GalleryListActivity;
 
 /**
  * @author Pavel Annin.
  */
-@Module
-public abstract class ActivitiesModule {}
+@Module()
+public abstract class ActivitiesModule {
+
+    @ContributesAndroidInjector(modules = GalleryModule.class)
+    @NonNull
+    abstract GalleryListActivity bindGalleryListActivity();
+
+    @ContributesAndroidInjector(modules = GalleryModule.class)
+    @NonNull
+    abstract GalleryDetailActivity bindGalleryDetailActivity();
+}

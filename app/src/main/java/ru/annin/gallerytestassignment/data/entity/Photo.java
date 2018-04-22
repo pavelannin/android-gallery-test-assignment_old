@@ -28,11 +28,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Pavel Annin.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Photo implements Parcelable {
 
     public static final Parcelable.Creator<Photo> CREATOR = new Parcelable.Creator<Photo>() {
@@ -47,37 +49,27 @@ public class Photo implements Parcelable {
         }
     };
 
-    @JsonProperty(value = "width", required = true)
-    private int width;
+    @JsonProperty(value = "id", required = true)
+    private String id;
 
-    @JsonProperty(value = "height", required = true)
-    private int height;
+    @JsonProperty(value = "description", required = true)
+    private String description;
 
-    @JsonProperty(value = "url", required = true)
-    private String url;
-
-    @JsonProperty(value = "photographer", required = true)
-    private String photographer;
-
-    @JsonProperty(value = "src", required = true)
+    @JsonProperty(value = "urls", required = true)
     private PhotoSource src;
 
     public Photo() { /* Empty constructor. */ }
 
     private Photo(@NonNull Parcel in) {
-        width = in.readInt();
-        height = in.readInt();
-        url = in.readString();
-        photographer = in.readString();
+        id = in.readString();
+        description = in.readString();
         src = in.readParcelable(PhotoSource.class.getClassLoader());
     }
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeInt(width);
-        dest.writeInt(height);
-        dest.writeString(url);
-        dest.writeString(photographer);
+        dest.writeString(id);
+        dest.writeString(description);
         dest.writeParcelable(src, flags);
     }
 
@@ -86,22 +78,14 @@ public class Photo implements Parcelable {
         return 0;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
+    @NonNull
+    public String getId() {
+        return id;
     }
 
     @NonNull
-    public String getUrl() {
-        return url;
-    }
-
-    @NonNull
-    public String getPhotographer() {
-        return photographer;
+    public String getDescription() {
+        return description;
     }
 
     @NonNull

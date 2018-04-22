@@ -34,10 +34,10 @@ import ru.annin.gallerytestassignment.data.remote.response.PhotosResponse;
 /**
  * @author Pavel Annin.
  */
-interface PexelsService {
+interface UnsplashService {
 
     @NonNull
-    @GET(value = "search")
+    @GET(value = "search/photos")
     Call<PhotosResponse> getPhotos(@Query(value = "query") @NonNull String query,
                                    @Query(value = "per_page") int perPage,
                                    @Query(value = "page") int page);

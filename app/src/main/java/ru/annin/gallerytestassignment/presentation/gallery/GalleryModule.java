@@ -22,39 +22,23 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.data.repository.inMemory;
+package ru.annin.gallerytestassignment.presentation.gallery;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.paging.DataSource;
 import android.support.annotation.NonNull;
 
-import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
+import dagger.Module;
+import dagger.Provides;
+import ru.annin.gallerytestassignment.domain.GalleryUseCase;
 
 /**
  * @author Pavel Annin.
  */
-public class PhotoDataSourceFactory extends DataSource.Factory<Integer, Photo> {
+@Module
+public class GalleryModule {
 
-    private final UnsplashApi api;
-    private final String query;
-    private final MutableLiveData<PhotoPageDataSource> sourceLiveData;
-
-    PhotoDataSourceFactory(@NonNull UnsplashApi api, @NonNull String query) {
-        this.api = api;
-        this.query = query;
-        sourceLiveData = new MutableLiveData<>();
-    }
-
-    @Override
-    public DataSource<Integer, Photo> create() {
-        final PhotoPageDataSource source = new PhotoPageDataSource(api, query);
-        sourceLiveData.postValue(source);
-        return source;
-    }
-
+    @Provides
     @NonNull
-    public MutableLiveData<PhotoPageDataSource> getSourceLiveData() {
-        return sourceLiveData;
+    public GalleryViewModelFactory provideGalleryViewModelFactory(@NonNull GalleryUseCase userCase) {
+        return new GalleryViewModelFactory(userCase);
     }
 }

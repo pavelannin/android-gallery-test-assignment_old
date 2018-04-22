@@ -22,39 +22,38 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.data.repository.inMemory;
+package ru.annin.gallerytestassignment.domain;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.paging.DataSource;
 import android.support.annotation.NonNull;
 
 import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
+import ru.annin.gallerytestassignment.data.repository.Listing;
+import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
 
 /**
  * @author Pavel Annin.
  */
-public class PhotoDataSourceFactory extends DataSource.Factory<Integer, Photo> {
+public class GalleryUseCase {
 
-    private final UnsplashApi api;
-    private final String query;
-    private final MutableLiveData<PhotoPageDataSource> sourceLiveData;
+    private final PhotoRepository photoRepository;
+    private MutableLiveData<Listing<Photo>> listingLiveData;
 
-    PhotoDataSourceFactory(@NonNull UnsplashApi api, @NonNull String query) {
-        this.api = api;
-        this.query = query;
-        sourceLiveData = new MutableLiveData<>();
-    }
-
-    @Override
-    public DataSource<Integer, Photo> create() {
-        final PhotoPageDataSource source = new PhotoPageDataSource(api, query);
-        sourceLiveData.postValue(source);
-        return source;
+    public GalleryUseCase(@NonNull PhotoRepository photoRepository) {
+        this.photoRepository = photoRepository;
+        listingLiveData = new MutableLiveData<>();
     }
 
     @NonNull
-    public MutableLiveData<PhotoPageDataSource> getSourceLiveData() {
-        return sourceLiveData;
+    public LiveData<Listing<Photo>> fetchPhoto(@NonNull String query, int pageSize) {
+        final Listing<Photo> listing = photoRepository.listPhoto(query, pageSize);
+        listingLiveData.postValue(listing);
+        return listingLiveData;
+    }
+
+    @NonNull
+    public LiveData<Listing<Photo>> getListingLiveData() {
+        return listingLiveData;
     }
 }

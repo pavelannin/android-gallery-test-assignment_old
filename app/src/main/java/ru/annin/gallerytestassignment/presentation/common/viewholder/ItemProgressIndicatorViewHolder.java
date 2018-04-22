@@ -22,39 +22,29 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.data.repository.inMemory;
+package ru.annin.gallerytestassignment.presentation.common.viewholder;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.paging.DataSource;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
 
-import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
+import ru.annin.gallerytestassignment.R;
 
 /**
  * @author Pavel Annin.
  */
-public class PhotoDataSourceFactory extends DataSource.Factory<Integer, Photo> {
+public class ItemProgressIndicatorViewHolder extends RecyclerView.ViewHolder {
 
-    private final UnsplashApi api;
-    private final String query;
-    private final MutableLiveData<PhotoPageDataSource> sourceLiveData;
+    // View's
+    private final ProgressBar progressIndicator;
 
-    PhotoDataSourceFactory(@NonNull UnsplashApi api, @NonNull String query) {
-        this.api = api;
-        this.query = query;
-        sourceLiveData = new MutableLiveData<>();
+    public ItemProgressIndicatorViewHolder(@NonNull View rootView) {
+        super(rootView);
+        progressIndicator = rootView.findViewById(R.id.progress_indicator);
     }
 
-    @Override
-    public DataSource<Integer, Photo> create() {
-        final PhotoPageDataSource source = new PhotoPageDataSource(api, query);
-        sourceLiveData.postValue(source);
-        return source;
-    }
-
-    @NonNull
-    public MutableLiveData<PhotoPageDataSource> getSourceLiveData() {
-        return sourceLiveData;
+    public void toggleVisible(boolean isVisible) {
+        progressIndicator.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 }

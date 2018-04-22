@@ -22,39 +22,37 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.data.repository.inMemory;
+package ru.annin.gallerytestassignment.presentation.gallery;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.paging.DataSource;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
-import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
+import ru.annin.gallerytestassignment.domain.GalleryUseCase;
+import ru.annin.gallerytestassignment.presentation.gallery.detail.GalleryDetailViewModel;
+import ru.annin.gallerytestassignment.presentation.gallery.list.GalleryListViewModel;
 
 /**
  * @author Pavel Annin.
  */
-public class PhotoDataSourceFactory extends DataSource.Factory<Integer, Photo> {
+public class GalleryViewModelFactory implements ViewModelProvider.Factory {
 
-    private final UnsplashApi api;
-    private final String query;
-    private final MutableLiveData<PhotoPageDataSource> sourceLiveData;
+    private final GalleryUseCase userCase;
 
-    PhotoDataSourceFactory(@NonNull UnsplashApi api, @NonNull String query) {
-        this.api = api;
-        this.query = query;
-        sourceLiveData = new MutableLiveData<>();
+    public GalleryViewModelFactory(@NonNull GalleryUseCase userCase) {
+        this.userCase = userCase;
     }
 
-    @Override
-    public DataSource<Integer, Photo> create() {
-        final PhotoPageDataSource source = new PhotoPageDataSource(api, query);
-        sourceLiveData.postValue(source);
-        return source;
-    }
-
+    @SuppressWarnings("unchecked")
     @NonNull
-    public MutableLiveData<PhotoPageDataSource> getSourceLiveData() {
-        return sourceLiveData;
+    @Override
+    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+        if (modelClass.isAssignableFrom(GalleryListViewModel.class)) {
+            return (T) new GalleryListViewModel(userCase);
+        } else if(modelClass.isAssignableFrom(GalleryDetailViewModel.class)) {
+            return (T) new GalleryDetailViewModel(userCase);
+        } else {
+            throw new IllegalArgumentException(String.format("Unknown view model class: %s", modelClass.getName()));
+        }
     }
 }

@@ -47,53 +47,38 @@ public class PhotoSource implements Parcelable {
         }
     };
 
-    @JsonProperty(value = "original", required = true)
-    private String original;
+    @JsonProperty(value = "raw", required = true)
+    private String raw;
 
-    @JsonProperty(value = "large", required = true)
-    private String large;
+    @JsonProperty(value = "full", required = true)
+    private String full;
 
-    @JsonProperty(value = "large2x", required = true)
-    private String large2x;
-
-    @JsonProperty(value = "medium", required = true)
-    private String medium;
+    @JsonProperty(value = "regular", required = true)
+    private String regular;
 
     @JsonProperty(value = "small", required = true)
     private String small;
 
-    @JsonProperty(value = "portrait", required = true)
-    private String portrait;
-
-    @JsonProperty(value = "landscape", required = true)
-    private String landscape;
-
-    @JsonProperty(value = "tiny", required = true)
-    private String tiny;
+    @JsonProperty(value = "thumb", required = true)
+    private String thumb;
 
     public PhotoSource() { /* Empty constructor. */ }
 
     private PhotoSource(@NonNull Parcel in) {
-        original = in.readString();
-        large = in.readString();
-        large2x = in.readString();
-        medium = in.readString();
+        raw = in.readString();
+        full = in.readString();
+        regular = in.readString();
         small = in.readString();
-        portrait = in.readString();
-        landscape = in.readString();
-        tiny = in.readString();
+        thumb = in.readString();
     }
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(original);
-        dest.writeString(large);
-        dest.writeString(large2x);
-        dest.writeString(medium);
+        dest.writeString(raw);
+        dest.writeString(full);
+        dest.writeString(regular);
         dest.writeString(small);
-        dest.writeString(portrait);
-        dest.writeString(landscape);
-        dest.writeString(tiny);
+        dest.writeString(thumb);
     }
 
     @Override
@@ -101,24 +86,18 @@ public class PhotoSource implements Parcelable {
         return 0;
     }
 
-    @NonNull
-    public String getOriginal() {
-        return original;
+    public String getRaw() {
+        return raw;
     }
 
     @NonNull
-    public String getLarge() {
-        return large;
+    public String getFull() {
+        return full;
     }
 
     @NonNull
-    public String getLarge2x() {
-        return large2x;
-    }
-
-    @NonNull
-    public String getMedium() {
-        return medium;
+    public String getRegular() {
+        return regular;
     }
 
     @NonNull
@@ -127,17 +106,7 @@ public class PhotoSource implements Parcelable {
     }
 
     @NonNull
-    public String getPortrait() {
-        return portrait;
-    }
-
-    @NonNull
-    public String getLandscape() {
-        return landscape;
-    }
-
-    @NonNull
-    public String getTiny() {
-        return tiny;
+    public String getThumb() {
+        return thumb;
     }
 }

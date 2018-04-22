@@ -24,7 +24,6 @@
 
 package ru.annin.gallerytestassignment.data.remote;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.util.concurrent.TimeUnit;
@@ -41,18 +40,21 @@ import ru.annin.gallerytestassignment.data.remote.response.PhotosResponse;
 /**
  * @author Pavel Annin.
  */
-public class PexelApi implements PexelsService {
+public class UnsplashApi implements UnsplashService {
 
+    private static final String HEADER_ACCEPT_VERSION = "Accept-Version";
     private static final String HEADER_AUTHORIZATION = "Authorization";
+    private static final String ACCEPT_VERSION_1 = "v1";
+    private static final String AUTHIRUZATION_FORMAT = "Client-ID %s";
 
     private static final long TIMEOUT_SEC = 60L;
     private static final long TIMEOUT_READ_SEC = 60L;
     private static final long TIMEOUT_WRITE_SEC = 2 * 60L;
 
-    private final PexelsService service;
+    private final UnsplashService service;
 
-    public PexelApi(boolean isDebugging, @NonNull String baseUrl, @NonNull String token) {
-        service = configRetrofit(isDebugging, baseUrl, token).create(PexelsService.class);
+    public UnsplashApi(boolean isDebugging, @NonNull String baseUrl, @NonNull String token) {
+        service = configRetrofit(isDebugging, baseUrl, token).create(UnsplashService.class);
     }
 
     @NonNull
@@ -85,7 +87,8 @@ public class PexelApi implements PexelsService {
     private Interceptor configHeaderInterceptor(@NonNull String token) {
         return chain -> {
             final Request request = chain.request().newBuilder()
-                    .addHeader(HEADER_AUTHORIZATION, token)
+                    .addHeader(HEADER_ACCEPT_VERSION, ACCEPT_VERSION_1)
+                    .addHeader(HEADER_AUTHORIZATION, String.format(AUTHIRUZATION_FORMAT, token))
                     .build();
             return chain.proceed(request);
         };

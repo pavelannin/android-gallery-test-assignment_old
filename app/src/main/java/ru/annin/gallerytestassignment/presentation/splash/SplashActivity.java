@@ -28,6 +28,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import ru.annin.gallerytestassignment.presentation.gallery.list.GalleryListActivity;
+
 /**
  * @author Pavel Annin.
  */
@@ -41,6 +43,6 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void openGallery() {
-        // TODO Open Gallery Screen
+        GalleryListActivity.launch(this);
     }
 }

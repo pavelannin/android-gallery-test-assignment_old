@@ -8,6 +8,7 @@ buildscript {
         retrofitVersion = '2.4.0'
         jacksonVersion = '2.9.5'
         okhttp3Version = '3.10.0'
+        glideVersion = '4.7.1'
         daggerVersion = '2.15'
         timberVersion = '4.7.0'
         leakcanaryVersion = '1.5.4'

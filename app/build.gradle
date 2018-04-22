@@ -24,8 +24,8 @@ android {
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "String", "PEXELS_BASE_URL", pexelsBaseUrl
-        buildConfigField "String", "PEXELS_TOKEN", pexelsToken
+        buildConfigField "String", "UNSPLASH_BASE_URL", unsplashBaseUrl
+        buildConfigField "String", "UNSPLASH_TOKEN", unsplashToken
     }
 
     buildTypes {
@@ -79,7 +79,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Android Support Library
-    implementation group: 'com.android.support', name: 'appcompat-v7', version: supportLibraryVersion
+    implementation group: 'com.android.support', name: 'design', version: supportLibraryVersion
     implementation group: 'com.android.support', name: 'recyclerview-v7', version: supportLibraryVersion
     implementation group: 'com.android.support', name: 'support-annotations', version: supportLibraryVersion
     implementation group: 'com.android.support.constraint', name: 'constraint-layout', version: constraintLayoutVersion
@@ -95,6 +95,11 @@ dependencies {
     implementation group: 'com.google.dagger', name: 'dagger-android-support', version: daggerVersion
     annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
     annotationProcessor group: 'com.google.dagger', name: 'dagger-android-processor', version: daggerVersion
+
+    // Glide
+    implementation group: 'com.github.bumptech.glide', name: 'glide', version: glideVersion
+    annotationProcessor group: 'com.github.bumptech.glide', name: 'compiler', version: glideVersion
+    implementation group: 'com.github.bumptech.glide', name: 'okhttp3-integration', version: glideVersion
 
     // Leak Memory
     debugImplementation group: 'com.squareup.leakcanary', name: 'leakcanary-android', version: leakcanaryVersion

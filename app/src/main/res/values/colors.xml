@@ -17,4 +17,6 @@
     <color name="mine_shaft">#212121</color>
     <color name="white">#FFFFFF</color>
     <color name="silver">#BDBDBD</color>
+    <color name="black_alpha_20">#cd000000</color>
+    <color name="cinnabar">#E53935</color>
 </resources>

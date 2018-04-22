@@ -22,52 +22,49 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.di;
+package ru.annin.gallerytestassignment.presentation.gallery.detail;
 
-import android.content.Context;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
+import android.arch.lifecycle.ViewModel;
+import android.arch.paging.PagedList;
 import android.support.annotation.NonNull;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import ru.annin.gallerytestassignment.BuildConfig;
-import ru.annin.gallerytestassignment.GalleryApplication;
-import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
-import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
-import ru.annin.gallerytestassignment.data.repository.inMemory.PhotoByPageRepository;
+import ru.annin.gallerytestassignment.data.entity.Photo;
+import ru.annin.gallerytestassignment.data.repository.Listing;
+import ru.annin.gallerytestassignment.data.repository.NetworkState;
 import ru.annin.gallerytestassignment.domain.GalleryUseCase;
 
 /**
  * @author Pavel Annin.
  */
-@Module
-public class ApplicationModule {
+public class GalleryDetailViewModel extends ViewModel {
 
-    @Provides
-    @NonNull
-    public Context provideContext(@NonNull GalleryApplication application) {
-        return application.getApplicationContext();
+    private final LiveData<Listing<Photo>> listingLiveData;
+
+    public GalleryDetailViewModel(@NonNull GalleryUseCase useCase) {
+        listingLiveData = Transformations.map(useCase.getListingLiveData(), input -> input);
     }
 
-    @Singleton
-    @Provides
-    @NonNull
-    public UnsplashApi provideUnsplashApi() {
-        return new UnsplashApi(BuildConfig.DEBUG, BuildConfig.UNSPLASH_BASE_URL, BuildConfig.UNSPLASH_TOKEN);
+    public void retryRequest() {
+        final Listing<Photo> listing = listingLiveData.getValue();
+        if (listing != null) {
+            listing.makeRetry();
+        }
     }
 
-    @Singleton
-    @Provides
     @NonNull
-    public PhotoRepository providePhotoRepository(@NonNull UnsplashApi api) {
-        return new PhotoByPageRepository(api);
+    public LiveData<PagedList<Photo>> getPagedListLiveData() {
+        return Transformations.switchMap(listingLiveData, Listing::getPagedList);
     }
 
-    @Singleton
-    @Provides
     @NonNull
-    public GalleryUseCase provideGalleryUseCase(@NonNull PhotoRepository photoRepository) {
-        return new GalleryUseCase(photoRepository);
+    public LiveData<NetworkState> getInitialStateLiveData() {
+        return Transformations.switchMap(listingLiveData, Listing::getInitialState);
+    }
+
+    @NonNull
+    public LiveData<NetworkState> getNetworkStateLiveData() {
+        return Transformations.switchMap(listingLiveData, Listing::getNetworkState);
     }
 }
