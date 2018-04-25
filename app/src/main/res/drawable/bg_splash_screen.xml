@@ -10,7 +10,9 @@
                 android:startColor="@color/primary_dark" />
         </shape>
     </item>
-    <item
-        android:drawable="@mipmap/ic_launcher_round"
-        android:gravity="center" />
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/ic_splash" />
+    </item>
 </layer-list>
