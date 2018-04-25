@@ -33,6 +33,7 @@ import dagger.Module;
 import dagger.Provides;
 import ru.annin.gallerytestassignment.BuildConfig;
 import ru.annin.gallerytestassignment.GalleryApplication;
+import ru.annin.gallerytestassignment.data.mapper.PhotoMapper;
 import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
 import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
 import ru.annin.gallerytestassignment.data.repository.inMemory.PhotoByPageRepository;
@@ -57,11 +58,17 @@ public class ApplicationModule {
         return new UnsplashApi(BuildConfig.DEBUG, BuildConfig.UNSPLASH_BASE_URL, BuildConfig.UNSPLASH_TOKEN);
     }
 
+    @Provides
+    @NonNull
+    public PhotoMapper providePhotoMapper() {
+        return new PhotoMapper();
+    }
+
     @Singleton
     @Provides
     @NonNull
-    public PhotoRepository providePhotoRepository(@NonNull UnsplashApi api) {
-        return new PhotoByPageRepository(api);
+    public PhotoRepository providePhotoRepository(@NonNull UnsplashApi api, @NonNull PhotoMapper mapper) {
+        return new PhotoByPageRepository(api, mapper);
     }
 
     @Singleton

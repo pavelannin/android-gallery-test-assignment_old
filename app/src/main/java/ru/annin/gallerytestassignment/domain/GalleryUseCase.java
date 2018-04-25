@@ -29,8 +29,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.repository.common.PagedListing;
 import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
+import ru.annin.gallerytestassignment.data.repository.common.PagedListing;
 
 /**
  * @author Pavel Annin.

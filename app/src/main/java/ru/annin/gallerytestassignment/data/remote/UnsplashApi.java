@@ -59,7 +59,7 @@ public class UnsplashApi implements UnsplashService {
     private static final String HEADER_ACCEPT_VERSION = "Accept-Version";
     private static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String ACCEPT_VERSION_1 = "v1";
-    private static final String AUTHIRUZATION_FORMAT = "Client-ID %s";
+    private static final String AUTHORIZATION_FORMAT = "Client-ID %s";
 
     private static final long TIMEOUT_SEC = 60L;
     private static final long TIMEOUT_READ_SEC = 60L;
@@ -114,7 +114,7 @@ public class UnsplashApi implements UnsplashService {
         return chain -> {
             final Request request = chain.request().newBuilder()
                     .addHeader(HEADER_ACCEPT_VERSION, ACCEPT_VERSION_1)
-                    .addHeader(HEADER_AUTHORIZATION, String.format(AUTHIRUZATION_FORMAT, token))
+                    .addHeader(HEADER_AUTHORIZATION, String.format(AUTHORIZATION_FORMAT, token))
                     .build();
             return chain.proceed(request);
         };

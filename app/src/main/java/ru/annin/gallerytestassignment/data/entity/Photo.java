@@ -28,13 +28,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * @author Pavel Annin.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Photo implements Parcelable {
 
     public static final Parcelable.Creator<Photo> CREATOR = new Parcelable.Creator<Photo>() {
@@ -49,28 +45,34 @@ public class Photo implements Parcelable {
         }
     };
 
-    @JsonProperty(value = "id", required = true)
-    private String id;
 
-    @JsonProperty(value = "description", required = true)
-    private String description;
+    private final String id;
+    private final int width;
+    private final int height;
+    private final String url;
 
-    @JsonProperty(value = "urls", required = true)
-    private PhotoSource src;
 
-    public Photo() { /* Empty constructor. */ }
+    public Photo(@NonNull String id, int width, int height, @NonNull String url) {
+        this.id = id;
+        this.width = width;
+        this.height = height;
+        this.url = url;
+    }
 
     private Photo(@NonNull Parcel in) {
         id = in.readString();
-        description = in.readString();
-        src = in.readParcelable(PhotoSource.class.getClassLoader());
+        width = in.readInt();
+        height = in.readInt();
+        url = in.readString();
     }
+
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(id);
-        dest.writeString(description);
-        dest.writeParcelable(src, flags);
+        dest.writeInt(width);
+        dest.writeInt(height);
+        dest.writeString(url);
     }
 
     @Override
@@ -83,13 +85,16 @@ public class Photo implements Parcelable {
         return id;
     }
 
-    @NonNull
-    public String getDescription() {
-        return description;
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     @NonNull
-    public PhotoSource getSrc() {
-        return src;
+    public String getUrl() {
+        return url;
     }
 }

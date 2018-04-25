@@ -29,6 +29,7 @@ import android.arch.paging.DataSource;
 import android.support.annotation.NonNull;
 
 import ru.annin.gallerytestassignment.data.entity.Photo;
+import ru.annin.gallerytestassignment.data.mapper.PhotoMapper;
 import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
 
 /**
@@ -37,18 +38,20 @@ import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
 public class PhotoDataSourceFactory extends DataSource.Factory<Integer, Photo> {
 
     private final UnsplashApi api;
+    private final PhotoMapper mapper;
     private final String query;
     private final MutableLiveData<PhotoPageDataSource> sourceLiveData;
 
-    PhotoDataSourceFactory(@NonNull UnsplashApi api, @NonNull String query) {
+    PhotoDataSourceFactory(@NonNull UnsplashApi api, @NonNull PhotoMapper mapper, @NonNull String query) {
         this.api = api;
+        this.mapper = mapper;
         this.query = query;
         sourceLiveData = new MutableLiveData<>();
     }
 
     @Override
     public DataSource<Integer, Photo> create() {
-        final PhotoPageDataSource source = new PhotoPageDataSource(api, query);
+        final PhotoPageDataSource source = new PhotoPageDataSource(api, mapper, query);
         sourceLiveData.postValue(source);
         return source;
     }

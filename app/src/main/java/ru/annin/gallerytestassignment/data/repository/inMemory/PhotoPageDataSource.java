@@ -34,6 +34,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ru.annin.gallerytestassignment.data.entity.Photo;
 import ru.annin.gallerytestassignment.data.exception.ApiException;
+import ru.annin.gallerytestassignment.data.mapper.PhotoMapper;
 import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
 import ru.annin.gallerytestassignment.data.remote.response.ErrorResponse;
 import ru.annin.gallerytestassignment.data.remote.response.PhotosResponse;
@@ -45,13 +46,15 @@ import ru.annin.gallerytestassignment.data.repository.common.NetworkState;
 public class PhotoPageDataSource extends PageKeyedDataSource<Integer, Photo> {
 
     private final UnsplashApi api;
+    private final PhotoMapper mapper;
     private final String query;
     private final MutableLiveData<NetworkState> initialLoad;
     private final MutableLiveData<NetworkState> networkState;
     private Runnable retry;
 
-    PhotoPageDataSource(@NonNull UnsplashApi api, @NonNull String query) {
+    PhotoPageDataSource(@NonNull UnsplashApi api, @NonNull PhotoMapper mapper, @NonNull String query) {
         this.api = api;
+        this.mapper = mapper;
         this.query = query;
         networkState = new MutableLiveData<>();
         initialLoad = new MutableLiveData<>();
@@ -67,7 +70,7 @@ public class PhotoPageDataSource extends PageKeyedDataSource<Integer, Photo> {
             public void onResponse(@NonNull Call<PhotosResponse> call, @NonNull Response<PhotosResponse> response) {
                 final PhotosResponse photoResponse = response.body();
                 if (photoResponse != null) {
-                    callback.onResult(photoResponse.getPhotos(), null, page + 1);
+                    callback.onResult(mapper.toPhotos(photoResponse.getPhotos()), null, page + 1);
                     initialLoad.postValue(NetworkState.loaded());
                     retry = null;
                 } else {
@@ -110,7 +113,7 @@ public class PhotoPageDataSource extends PageKeyedDataSource<Integer, Photo> {
             public void onResponse(@NonNull Call<PhotosResponse> call, @NonNull Response<PhotosResponse> response) {
                 final PhotosResponse photoResponse = response.body();
                 if (photoResponse != null) {
-                    callback.onResult(photoResponse.getPhotos(), params.key + 1);
+                    callback.onResult(mapper.toPhotos(photoResponse.getPhotos()), params.key + 1);
                     networkState.postValue(NetworkState.loaded());
                     retry = null;
                 } else  {

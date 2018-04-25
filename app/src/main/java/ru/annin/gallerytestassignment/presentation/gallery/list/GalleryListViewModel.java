@@ -25,15 +25,14 @@
 package ru.annin.gallerytestassignment.presentation.gallery.list;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.paging.PagedList;
 import android.support.annotation.NonNull;
 
 import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.repository.Listing;
-import ru.annin.gallerytestassignment.data.repository.NetworkState;
+import ru.annin.gallerytestassignment.data.repository.common.NetworkState;
+import ru.annin.gallerytestassignment.data.repository.common.PagedListing;
 import ru.annin.gallerytestassignment.domain.GalleryUseCase;
 
 /**
@@ -41,29 +40,25 @@ import ru.annin.gallerytestassignment.domain.GalleryUseCase;
  */
 public class GalleryListViewModel extends ViewModel {
 
-    private static final int PAGE_SIZE = 10;
-
-    private final MutableLiveData<String> queryLiveData;
-    private final LiveData<Listing<Photo>> listingLiveData;
+    private final GalleryUseCase useCase;
+    private final LiveData<PagedListing<Photo>> listingLiveData;
 
     public GalleryListViewModel(@NonNull GalleryUseCase useCase) {
-        queryLiveData = new MutableLiveData<>();
-        listingLiveData = Transformations.switchMap(queryLiveData, input -> useCase.fetchPhoto(input, PAGE_SIZE));
+        this.useCase =useCase;
+        listingLiveData = Transformations.map(useCase.getListingLiveData(), input -> input);
     }
 
-    public void loadGallery(@NonNull String query) {
-        queryLiveData.setValue(query);
-    }
+    public void loadGallery(@NonNull String query) { useCase.fetchPhoto(query); }
 
     public void refresh() {
-        final Listing<Photo> listing = listingLiveData.getValue();
+        final PagedListing<Photo> listing = listingLiveData.getValue();
         if (listing != null) {
             listing.makeRefresh();
         }
     }
 
     public void retryRequest() {
-        final Listing<Photo> listing = listingLiveData.getValue();
+        final PagedListing<Photo> listing = listingLiveData.getValue();
         if (listing != null) {
             listing.makeRetry();
         }
@@ -71,16 +66,16 @@ public class GalleryListViewModel extends ViewModel {
 
     @NonNull
     public LiveData<PagedList<Photo>> getPagedListLiveData() {
-        return Transformations.switchMap(listingLiveData, Listing::getPagedList);
+        return Transformations.switchMap(listingLiveData, PagedListing::getPagedList);
     }
 
     @NonNull
     public LiveData<NetworkState> getInitialStateLiveData() {
-        return Transformations.switchMap(listingLiveData, Listing::getInitialState);
+        return Transformations.switchMap(listingLiveData, PagedListing::getInitialState);
     }
 
     @NonNull
     public LiveData<NetworkState> getNetworkStateLiveData() {
-        return Transformations.switchMap(listingLiveData, Listing::getNetworkState);
+        return Transformations.switchMap(listingLiveData, PagedListing::getNetworkState);
     }
 }

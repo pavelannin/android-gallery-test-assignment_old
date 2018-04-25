@@ -30,9 +30,9 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import ru.annin.gallerytestassignment.data.entity.Photo;
+import ru.annin.gallerytestassignment.data.mapper.PhotoMapper;
 import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
 import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
 import ru.annin.gallerytestassignment.data.repository.common.PagedListing;
@@ -43,16 +43,18 @@ import ru.annin.gallerytestassignment.data.repository.common.PagedListing;
 public class PhotoByPageRepository implements PhotoRepository {
 
     private final UnsplashApi api;
+    private final PhotoMapper mapper;
 
-    public PhotoByPageRepository(@NonNull UnsplashApi api) {
+    public PhotoByPageRepository(@NonNull UnsplashApi api, @NonNull PhotoMapper mapper) {
         this.api = api;
+        this.mapper = mapper;
     }
 
     @MainThread
     @NonNull
     @Override
     public PagedListing<Photo> listPhoto(@NonNull String query, int pageSize) {
-        final PhotoDataSourceFactory factory = new PhotoDataSourceFactory(api, query);
+        final PhotoDataSourceFactory factory = new PhotoDataSourceFactory(api, mapper, query);
 
         final PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)

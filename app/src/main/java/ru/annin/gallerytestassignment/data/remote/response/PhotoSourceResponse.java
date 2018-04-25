@@ -28,51 +28,60 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.List;
 
 /**
  * @author Pavel Annin.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class PhotosResponse implements Parcelable {
+public class PhotoSourceResponse implements Parcelable {
 
-    public static final Parcelable.Creator<PhotosResponse> CREATOR = new Parcelable.Creator<PhotosResponse>() {
+    public static final Parcelable.Creator<PhotoSourceResponse> CREATOR = new Parcelable.Creator<PhotoSourceResponse>() {
         @Override
-        public PhotosResponse createFromParcel(Parcel source) {
-            return new PhotosResponse(source);
+        public PhotoSourceResponse createFromParcel(Parcel in) {
+            return new PhotoSourceResponse(in);
         }
 
         @Override
-        public PhotosResponse[] newArray(int size) {
-            return new PhotosResponse[size];
+        public PhotoSourceResponse[] newArray(int size) {
+            return new PhotoSourceResponse[size];
         }
     };
 
-    @JsonProperty(value = "total", required = true)
-    private int total;
 
-    @JsonProperty(value = "total_pages", required = true)
-    private int totalPages;
+    @JsonProperty(value = "raw", required = true)
+    private String raw;
 
-    @JsonProperty(value = "results", required = true)
-    private List<PhotoResponse> photos;
+    @JsonProperty(value = "full", required = true)
+    private String full;
 
-    public PhotosResponse() { /* Empty constructor. */ }
+    @JsonProperty(value = "regular", required = true)
+    private String regular;
 
-    private PhotosResponse(@NonNull Parcel in) {
-        total = in.readInt();
-        totalPages = in.readInt();
-        photos = in.createTypedArrayList(PhotoResponse.CREATOR);
+    @JsonProperty(value = "small", required = true)
+    private String small;
+
+    @JsonProperty(value = "thumb", required = true)
+    private String thumb;
+
+
+    public PhotoSourceResponse() { /* Empty constructor. */ }
+
+    private PhotoSourceResponse(@NonNull Parcel in) {
+        raw = in.readString();
+        full = in.readString();
+        regular = in.readString();
+        small = in.readString();
+        thumb = in.readString();
     }
+
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeInt(total);
-        dest.writeInt(totalPages);
-        dest.writeTypedList(photos);
+        dest.writeString(raw);
+        dest.writeString(full);
+        dest.writeString(regular);
+        dest.writeString(small);
+        dest.writeString(thumb);
     }
 
     @Override
@@ -80,16 +89,27 @@ public class PhotosResponse implements Parcelable {
         return 0;
     }
 
-    public int getTotal() {
-        return total;
-    }
-
-    public int getTotalPages() {
-        return totalPages;
+    public String getRaw() {
+        return raw;
     }
 
     @NonNull
-    public List<PhotoResponse> getPhotos() {
-        return photos;
+    public String getFull() {
+        return full;
+    }
+
+    @NonNull
+    public String getRegular() {
+        return regular;
+    }
+
+    @NonNull
+    public String getSmall() {
+        return small;
+    }
+
+    @NonNull
+    public String getThumb() {
+        return thumb;
     }
 }

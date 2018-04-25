@@ -22,13 +22,35 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.utils;
+package ru.annin.gallerytestassignment.data.mapper;
 
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.module.AppGlideModule;
+import android.support.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import ru.annin.gallerytestassignment.data.entity.Photo;
+import ru.annin.gallerytestassignment.data.remote.response.PhotoResponse;
 
 /**
  * @author Pavel Annin.
  */
-@GlideModule
-public final class ApplicationGlideModule extends AppGlideModule{ /* Empty. */ }
+public class PhotoMapper {
+
+    private static final int WIDTH = 200;
+
+    @NonNull
+    public Photo toPhoto(@NonNull PhotoResponse response) {
+        final int height = (int) ((WIDTH / (float) response.getWidth()) * response.getHeight());
+        return new Photo(response.getId(), WIDTH, height, response.getSrc().getThumb());
+    }
+
+    @NonNull
+    public List<Photo> toPhotos(@NonNull List<PhotoResponse> responses) {
+        final List<Photo> photos = new ArrayList<>();
+        for (final PhotoResponse response : responses) {
+            photos.add(toPhoto(response));
+        }
+        return photos;
+    }
+}

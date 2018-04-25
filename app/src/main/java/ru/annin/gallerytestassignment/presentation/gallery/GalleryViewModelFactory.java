@@ -39,7 +39,7 @@ public class GalleryViewModelFactory implements ViewModelProvider.Factory {
 
     private final GalleryUseCase userCase;
 
-    public GalleryViewModelFactory(@NonNull GalleryUseCase userCase) {
+    GalleryViewModelFactory(@NonNull GalleryUseCase userCase) {
         this.userCase = userCase;
     }
 

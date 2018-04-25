@@ -31,48 +31,55 @@ import android.support.annotation.NonNull;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
 /**
  * @author Pavel Annin.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PhotosResponse implements Parcelable {
+public class PhotoResponse implements Parcelable {
 
-    public static final Parcelable.Creator<PhotosResponse> CREATOR = new Parcelable.Creator<PhotosResponse>() {
+    public static final Parcelable.Creator<PhotoResponse> CREATOR = new Parcelable.Creator<PhotoResponse>() {
         @Override
-        public PhotosResponse createFromParcel(Parcel source) {
-            return new PhotosResponse(source);
+        public PhotoResponse createFromParcel(Parcel source) {
+            return new PhotoResponse(source);
         }
 
         @Override
-        public PhotosResponse[] newArray(int size) {
-            return new PhotosResponse[size];
+        public PhotoResponse[] newArray(int size) {
+            return new PhotoResponse[size];
         }
     };
 
-    @JsonProperty(value = "total", required = true)
-    private int total;
 
-    @JsonProperty(value = "total_pages", required = true)
-    private int totalPages;
+    @JsonProperty(value = "id", required = true)
+    private String id;
 
-    @JsonProperty(value = "results", required = true)
-    private List<PhotoResponse> photos;
+    @JsonProperty(value = "width", required = true)
+    private int width;
 
-    public PhotosResponse() { /* Empty constructor. */ }
+    @JsonProperty(value = "height", required = true)
+    private int height;
 
-    private PhotosResponse(@NonNull Parcel in) {
-        total = in.readInt();
-        totalPages = in.readInt();
-        photos = in.createTypedArrayList(PhotoResponse.CREATOR);
+    @JsonProperty(value = "urls", required = true)
+    private PhotoSourceResponse src;
+
+
+    public PhotoResponse() { /* Empty constructor. */ }
+
+    private PhotoResponse(@NonNull Parcel in) {
+        id = in.readString();
+        width = in.readInt();
+        height = in.readInt();
+
+        src = in.readParcelable(PhotoSourceResponse.class.getClassLoader());
     }
+
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeInt(total);
-        dest.writeInt(totalPages);
-        dest.writeTypedList(photos);
+        dest.writeString(id);
+        dest.writeInt(width);
+        dest.writeInt(height);
+        dest.writeParcelable(src, flags);
     }
 
     @Override
@@ -80,16 +87,21 @@ public class PhotosResponse implements Parcelable {
         return 0;
     }
 
-    public int getTotal() {
-        return total;
+    @NonNull
+    public String getId() {
+        return id;
     }
 
-    public int getTotalPages() {
-        return totalPages;
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     @NonNull
-    public List<PhotoResponse> getPhotos() {
-        return photos;
+    public PhotoSourceResponse getSrc() {
+        return src;
     }
 }
