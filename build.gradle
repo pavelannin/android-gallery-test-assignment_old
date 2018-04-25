@@ -1,0 +1,39 @@
+buildscript {
+
+    ext {
+        supportLibraryVersion = '27.1.1'
+        constraintLayoutVersion = '1.1.0'
+        architectureComponentsVersion = "1.1.1"
+        architectureComponentsPagingVersion = "1.0.0-rc1"
+        retrofitVersion = '2.4.0'
+        jacksonVersion = '2.9.5'
+        okhttp3Version = '3.10.0'
+        glideVersion = '4.7.1'
+        daggerVersion = '2.15'
+        timberVersion = '4.7.0'
+        leakcanaryVersion = '1.5.4'
+        junitVersion = '4.12'
+        supportTestRunner = '1.0.1'
+        espressoVersion = '3.0.1'
+    }
+
+
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies { classpath 'com.android.tools.build:gradle:3.1.2' }
+
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

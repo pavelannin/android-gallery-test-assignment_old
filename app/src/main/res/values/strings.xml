@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <!-- Global -->
+    <string name="app_name">GalleryTestAssignment</string>
+
+    <!-- Error Alert -->
+    <string name="error_action_retry">Повторить</string>
+    <string name="error_action_exit">Закрыть</string>
+    <string name="error_message_unknown">Неизвестная ошибка. Пожалуйста сообщите разработчикам.</string>
+    <string name="error_message_server_not_available">Сервер не отвечает. Пожалуйста повторите попытку.</string>
+    <string name="error_message_internet_not_available">Нет подключения к интернету. Подключите интернет и повторите попытку.</string>
+
+</resources>

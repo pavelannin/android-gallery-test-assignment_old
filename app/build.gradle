@@ -1,0 +1,129 @@
+apply plugin: 'com.android.application'
+apply from: "${rootDir}/tools/script-git-version.gradle"
+apply from: "${rootDir}/configuration/api-contract.gradle"
+apply from: "${rootDir}/configuration/signing.gradle"
+
+def versionMajor = Integer.parseInt(VERSION_MAJOR)
+def versionMinor = Integer.parseInt(VERSION_MINOR)
+def versionPatch = Integer.parseInt(VERSION_PATCH)
+def versionBuild = Integer.parseInt(VERSION_BUILD)
+
+android {
+
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+
+    defaultConfig {
+        applicationId "ru.annin.gallerytestassignment"
+        minSdkVersion 16
+        targetSdkVersion 27
+
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+
+        resConfigs "ru"
+        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "UNSPLASH_BASE_URL", unsplashBaseUrl
+        buildConfigField "String", "UNSPLASH_TOKEN", unsplashToken
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            versionNameSuffix "-${gitRevision}"
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    applicationVariants.all { variant ->
+        File outDir = file("${rootDir}/out/${variant.buildType.name}")
+        File mappingOutDir = file("${outDir}/mapping")
+        if (!outDir.exists()) { outDir.mkdirs() }
+        if (!mappingOutDir.exists()) { mappingOutDir.mkdirs() }
+        variant.assemble.doLast {
+            variant.outputs.each { output ->
+                copy {
+                    from output.outputFile
+                    into outDir
+                    rename { fileName -> "GalleryTestAssignment_v${variant.versionName}.${variant.versionCode}.apk" }
+                }
+            }
+            copy {
+                from variant.mappingFile
+                into mappingOutDir
+                rename { fileName -> "mapping_v${variant.versionName}.${variant.versionCode}.txt" }
+            }
+        }
+    }
+
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
+        jumboMode = true
+    }
+
+    task('increaseVersionBuild') << {
+        ant.propertyfile(file: "../gradle.properties") {
+            versionPatch = versionPatch + 1
+            entry(key: "VERSION_PATCH", value: versionPatch)
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Android Support Library
+    implementation group: 'com.android.support', name: 'design', version: supportLibraryVersion
+    implementation group: 'com.android.support', name: 'recyclerview-v7', version: supportLibraryVersion
+    implementation group: 'com.android.support', name: 'support-annotations', version: supportLibraryVersion
+    implementation group: 'com.android.support.constraint', name: 'constraint-layout', version: constraintLayoutVersion
+
+    // Architecture Components
+    implementation group: 'android.arch.lifecycle', name: 'extensions', version: architectureComponentsVersion
+    implementation group: 'android.arch.paging', name: 'runtime', version: architectureComponentsPagingVersion
+    annotationProcessor group: 'android.arch.lifecycle', name: 'compiler', version: architectureComponentsVersion
+
+    // Dagger 2
+    api group: 'com.google.dagger', name: 'dagger', version: daggerVersion
+    implementation group: 'com.google.dagger', name: 'dagger-android', version: daggerVersion
+    implementation group: 'com.google.dagger', name: 'dagger-android-support', version: daggerVersion
+    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+    annotationProcessor group: 'com.google.dagger', name: 'dagger-android-processor', version: daggerVersion
+
+    // Glide
+    implementation group: 'com.github.bumptech.glide', name: 'glide', version: glideVersion
+    annotationProcessor group: 'com.github.bumptech.glide', name: 'compiler', version: glideVersion
+    implementation group: 'com.github.bumptech.glide', name: 'okhttp3-integration', version: glideVersion
+
+    // Leak Memory
+    debugImplementation group: 'com.squareup.leakcanary', name: 'leakcanary-android', version: leakcanaryVersion
+    releaseImplementation group: 'com.squareup.leakcanary', name: 'leakcanary-android-no-op', version: leakcanaryVersion
+
+    // Logger
+    implementation group: 'com.jakewharton.timber', name: 'timber', version: timberVersion
+
+    // Rest Api
+    implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: okhttp3Version
+    implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: retrofitVersion
+    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: retrofitVersion
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
+
+    // Test's
+    testImplementation group: 'junit', name: 'junit', version: junitVersion
+    androidTestImplementation group: 'com.android.support.test', name: 'runner', version: supportTestRunner
+    androidTestImplementation group: 'com.android.support.test.espresso', name: 'espresso-core', version: espressoVersion
+}
