@@ -2,6 +2,7 @@
 ### Project ###
 ###############
 /configuration/api-contract.gradle
+/configuration/signing.gradle
 
 
 ###############

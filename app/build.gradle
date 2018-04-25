@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply from: "${rootDir}/tools/script-git-version.gradle"
 apply from: "${rootDir}/configuration/api-contract.gradle"
+apply from: "${rootDir}/configuration/signing.gradle"
 
 def versionMajor = Integer.parseInt(VERSION_MAJOR)
 def versionMinor = Integer.parseInt(VERSION_MINOR)
@@ -38,20 +39,27 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
     applicationVariants.all { variant ->
         File outDir = file("${rootDir}/out/${variant.buildType.name}")
-        if (!outDir.exists()) {outDir.mkdirs()}
+        File mappingOutDir = file("${outDir}/mapping")
+        if (!outDir.exists()) { outDir.mkdirs() }
+        if (!mappingOutDir.exists()) { mappingOutDir.mkdirs() }
         variant.assemble.doLast {
             variant.outputs.each { output ->
-                File apkFile = output.outputFile
                 copy {
-                    from apkFile
+                    from output.outputFile
                     into outDir
                     rename { fileName -> "GalleryTestAssignment_v${variant.versionName}.${variant.versionCode}.apk" }
                 }
+            }
+            copy {
+                from variant.mappingFile
+                into mappingOutDir
+                rename { fileName -> "mapping_v${variant.versionName}.${variant.versionCode}.txt" }
             }
         }
     }
