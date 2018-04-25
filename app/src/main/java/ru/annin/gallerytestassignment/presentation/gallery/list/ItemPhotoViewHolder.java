@@ -28,16 +28,17 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.TextView;
+import android.view.ViewGroup;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
 import ru.annin.gallerytestassignment.R;
 import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.utils.GlideApp;
+import ru.annin.gallerytestassignment.presentation.common.widget.DynamicHeightImageView;
+import ru.annin.gallerytestassignment.utils.glide.GlideApp;
 
 /**
  * @author Pavel Annin.
@@ -45,26 +46,39 @@ import ru.annin.gallerytestassignment.utils.GlideApp;
 public class ItemPhotoViewHolder extends RecyclerView.ViewHolder {
 
     // View's
-    private final AppCompatImageView photoImageView;
-    private final TextView signatureTextView;
+    private final ViewGroup containerViewGroup;
+    private final DynamicHeightImageView photoImageView;
 
     ItemPhotoViewHolder(@NonNull View rootView) {
         super(rootView);
+        containerViewGroup = rootView.findViewById(R.id.main_container);
         photoImageView = rootView.findViewById(R.id.iv_photo);
-        signatureTextView = rootView.findViewById(R.id.txt_signature);
     }
 
     public void bindToPhoto(@NonNull Photo photo) {
+        float ratio = photo.getHeight() / (float) photo.getWidth();
+        photoImageView.setRatio(ratio);
+
         final Resources resources = itemView.getResources();
         final Drawable placeholderDrawable = VectorDrawableCompat.create(resources, R.drawable.ic_placeholder, null);
         final Drawable errorDrawable = VectorDrawableCompat.create(resources, R.drawable.ic_close_outline, null);
 
-        signatureTextView.setText(photo.getDescription());
         GlideApp.with(photoImageView)
-                .load(photo.getSrc().getThumb())
+                .load(photo.getUrl())
                 .placeholder(placeholderDrawable)
                 .error(errorDrawable)
                 .transition(DrawableTransitionOptions.withCrossFade())
+                .override(photo.getWidth(), photo.getHeight())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(photoImageView);
+    }
+
+    @NonNull
+    public View getSharedElement() {
+        return photoImageView;
+    }
+
+    public void setOnItemClickListener(View.OnClickListener listener) {
+        containerViewGroup.setOnClickListener(listener);
     }
 }

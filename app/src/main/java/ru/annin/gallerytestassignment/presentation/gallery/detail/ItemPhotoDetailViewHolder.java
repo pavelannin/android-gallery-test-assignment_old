@@ -32,11 +32,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestListener;
 
 import ru.annin.gallerytestassignment.R;
 import ru.annin.gallerytestassignment.data.entity.Photo;
 import ru.annin.gallerytestassignment.presentation.common.widget.TouchImageView;
-import ru.annin.gallerytestassignment.utils.GlideApp;
+import ru.annin.gallerytestassignment.utils.glide.GlideApp;
 
 /**
  * @author Pavel Annin.
@@ -45,6 +46,9 @@ public class ItemPhotoDetailViewHolder extends RecyclerView.ViewHolder {
 
     // View's
     private final TouchImageView photoImageView;
+
+    // Listener's
+    private RequestListener<Drawable> photoRequestListener;
 
     ItemPhotoDetailViewHolder(@NonNull View rootView) {
         super(rootView);
@@ -56,11 +60,22 @@ public class ItemPhotoDetailViewHolder extends RecyclerView.ViewHolder {
         final Drawable placeholderDrawable = VectorDrawableCompat.create(resources, R.drawable.ic_placeholder, null);
         final Drawable errorDrawable = VectorDrawableCompat.create(resources, R.drawable.ic_close_outline, null);
 
+        photoImageView.resetZoom();
         GlideApp.with(photoImageView)
-                .load(photo.getSrc().getRegular())
+                .load(photo.getUrl())
                 .placeholder(placeholderDrawable)
                 .error(errorDrawable)
                 .transition(DrawableTransitionOptions.withCrossFade())
+                .listener(photoRequestListener)
                 .into(photoImageView);
+    }
+
+    @NonNull
+    public View getSharedElement() {
+        return photoImageView;
+    }
+
+    public void setPhotoRequestListener(RequestListener<Drawable> photoRequestListener) {
+        this.photoRequestListener = photoRequestListener;
     }
 }

@@ -26,6 +26,7 @@ package ru.annin.gallerytestassignment.presentation.gallery.list;
 
 import android.arch.paging.PagedListAdapter;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -37,11 +38,12 @@ import android.view.ViewGroup;
 import ru.annin.gallerytestassignment.R;
 import ru.annin.gallerytestassignment.data.entity.Photo;
 import ru.annin.gallerytestassignment.presentation.common.viewholder.ItemProgressIndicatorViewHolder;
+import ru.annin.gallerytestassignment.utils.ViewUtils;
 
 /**
  * @author Pavel Annin.
  */
-public class GalleryListAdapter extends PagedListAdapter<Photo, RecyclerView.ViewHolder> {
+class GalleryListAdapter extends PagedListAdapter<Photo, RecyclerView.ViewHolder> {
 
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_PROGRESS_INDICATOR = 1;
@@ -58,7 +60,7 @@ public class GalleryListAdapter extends PagedListAdapter<Photo, RecyclerView.Vie
     };
 
     interface OnClickListener {
-        void onItemClick(int position, @NonNull Photo photo);
+        void onItemClick(int position, @NonNull Photo photo, @NonNull View sharedElement);
     }
 
 
@@ -93,10 +95,12 @@ public class GalleryListAdapter extends PagedListAdapter<Photo, RecyclerView.Vie
             final ItemPhotoViewHolder viewHolder = (ItemPhotoViewHolder) holder;
             final Photo item = getItem(position);
             if (item != null) {
+                ViewCompat.setTransitionName(viewHolder.getSharedElement(),
+                        ViewUtils.getTransitionName(viewHolder.getSharedElement(), item.getId()));
                 viewHolder.bindToPhoto(item);
-                viewHolder.itemView.setOnClickListener(v -> {
+                viewHolder.setOnItemClickListener(v -> {
                     if (listener != null) {
-                        listener.onItemClick(position, item);
+                        listener.onItemClick(position, item, viewHolder.getSharedElement());
                     }
                 });
             }

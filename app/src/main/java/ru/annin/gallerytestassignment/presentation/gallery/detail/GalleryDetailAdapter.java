@@ -25,7 +25,10 @@
 package ru.annin.gallerytestassignment.presentation.gallery.detail;
 
 import android.arch.paging.PagedListAdapter;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -33,9 +36,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+
 import ru.annin.gallerytestassignment.R;
 import ru.annin.gallerytestassignment.data.entity.Photo;
 import ru.annin.gallerytestassignment.presentation.common.viewholder.ItemProgressIndicatorViewHolder;
+import ru.annin.gallerytestassignment.utils.ViewUtils;
 
 /**
  * @author Pavel Annin.
@@ -56,7 +65,13 @@ public class GalleryDetailAdapter extends PagedListAdapter<Photo, RecyclerView.V
         }
     };
 
+    interface OnPhotoListener {
+        void onViewLoaded(@NonNull View view, int position);
+    }
+
+
     private boolean isFooterProgressIndicatorVisible = false;
+    private OnPhotoListener listener;
 
 
     GalleryDetailAdapter() {
@@ -81,11 +96,30 @@ public class GalleryDetailAdapter extends PagedListAdapter<Photo, RecyclerView.V
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemPhotoDetailViewHolder) {
             final ItemPhotoDetailViewHolder viewHolder = (ItemPhotoDetailViewHolder) holder;
             final Photo item = getItem(position);
             if (item != null) {
+                ViewCompat.setTransitionName(viewHolder.getSharedElement(),
+                        ViewUtils.getTransitionName(viewHolder.getSharedElement(), item.getId()));
+                viewHolder.setPhotoRequestListener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        if (listener != null) {
+                            listener.onViewLoaded(viewHolder.getSharedElement(), viewHolder.getAdapterPosition());
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        if (listener != null) {
+                            listener.onViewLoaded(viewHolder.getSharedElement(), viewHolder.getAdapterPosition());
+                        }
+                        return false;
+                    }
+                });
                 viewHolder.bindToPhoto(item);
             }
         } else if (holder instanceof ItemProgressIndicatorViewHolder) {
@@ -124,6 +158,10 @@ public class GalleryDetailAdapter extends PagedListAdapter<Photo, RecyclerView.V
         } else if (hasProgressColumn && previousState != isVisible) {
             notifyItemChanged(getItemCount() - 1);
         }
+    }
+
+    public void setListener(OnPhotoListener listener) {
+        this.listener = listener;
     }
 
     private boolean hasProgressColumn() {

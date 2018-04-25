@@ -32,6 +32,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -40,18 +43,20 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 import ru.annin.gallerytestassignment.R;
 import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.repository.NetworkState;
+import ru.annin.gallerytestassignment.data.repository.common.NetworkState;
+import ru.annin.gallerytestassignment.presentation.common.alert.ErrorDialogFragment;
+import ru.annin.gallerytestassignment.presentation.gallery.GallerySharedElementEnterCallback;
 import ru.annin.gallerytestassignment.presentation.gallery.GalleryViewModelFactory;
 import ru.annin.gallerytestassignment.presentation.gallery.detail.GalleryDetailActivity;
-import ru.annin.gallerytestassignment.utils.LiveDataUtil;
 import timber.log.Timber;
 
 /**
  * @author Pavel Annin.
  */
-public class GalleryListActivity extends AppCompatActivity {
+public class GalleryListActivity extends AppCompatActivity implements ErrorDialogFragment.OnErrorDialogInteraction {
 
-    private static final int RC_GALLERY_DETAIL = 1;
+    private static final int ERC_INITIAL = 1;
+    private static final int ERC_MORE = 2;
 
     public static void launch(@NonNull Context context) {
         final Intent intent = new Intent(context, GalleryListActivity.class);
@@ -64,14 +69,79 @@ public class GalleryListActivity extends AppCompatActivity {
     private GalleryListViewModel viewModel;
     private GalleryListViewHolder viewHolder;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_list);
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(GalleryListViewModel.class);
-        viewHolder = new GalleryListViewHolder(findViewById(R.id.main_container));
 
+        viewHolder = new GalleryListViewHolder(findViewById(R.id.main_container));
+        subscribe(viewHolder);
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(GalleryListViewModel.class);
+        subscribe(viewModel);
+
+        if (savedInstanceState == null) {
+            viewModel.loadGallery("Android");
+        }
+    }
+
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+        ActivityCompat.postponeEnterTransition(this);
+        if (data != null && data.getExtras() != null
+                && data.getExtras().containsKey(GalleryDetailActivity.EXTRA_POSITION)) {
+
+            final int position = data.getExtras().getInt(GalleryDetailActivity.EXTRA_POSITION);
+            viewHolder.setPhotoPosition(position);
+            final View sharedElement = viewHolder.getSharedElementById(position);
+
+            if (sharedElement != null) {
+                final GallerySharedElementEnterCallback callback = new GallerySharedElementEnterCallback();
+                callback.setListSharedElement(sharedElement);
+                ActivityCompat.setExitSharedElementCallback(this, callback);
+            }
+        }
+        viewHolder.setOnPreDrawPhotoListListener(() -> ActivityCompat.startPostponedEnterTransition(this));
+    }
+
+    @Override
+    public void onErrorResult(int requestCode, int resultCode) {
+        if (resultCode == ErrorDialogFragment.RESULT_RETRY) {
+            switch (requestCode) {
+                case ERC_INITIAL:
+                    viewModel.refresh();
+                    break;
+                case ERC_MORE:
+                    viewModel.retryRequest();
+                    break;
+                default:
+                    throw new IllegalArgumentException(String.format("Unknown request code, %d", requestCode));
+            }
+        } else if (resultCode == ErrorDialogFragment.RESULT_EXIT) {
+            finish();
+        } else {
+            throw new IllegalArgumentException(String.format("Unknown result code, %d", resultCode));
+        }
+    }
+
+    private void openGalleryDetail(int position, @NonNull final View sharedElement) {
+        GalleryDetailActivity.launch(this, position, sharedElement);
+    }
+
+    private void openError(@NonNull Throwable throwable, int requestCode) {
+        final Fragment fragment = getSupportFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG);
+        if (fragment != null && fragment instanceof DialogFragment) {
+            final DialogFragment dialogFragment = (DialogFragment) fragment;
+            dialogFragment.dismiss();
+        }
+        ErrorDialogFragment.newInstance(throwable, requestCode)
+                .show(getSupportFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    private void subscribe(@NonNull GalleryListViewHolder viewHolder) {
         viewHolder.setListener(new GalleryListViewHolder.OnClickListener() {
             @Override
             public void onRefresh() {
@@ -79,35 +149,10 @@ public class GalleryListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPhotoClick(int position, @NonNull Photo photo) {
-                openGalleryDetail(position, photo);
+            public void onPhotoClick(int position, @NonNull Photo photo, @NonNull View sharedElement) {
+                openGalleryDetail(position, sharedElement);
             }
         });
-
-        subscribe(viewModel);
-        if (savedInstanceState == null) {
-            viewModel.loadGallery("Android");
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case RC_GALLERY_DETAIL:
-                if (resultCode == RESULT_OK && data != null && data.getExtras() != null
-                        && data.getExtras().containsKey(GalleryDetailActivity.EXTRA_POSITION)) {
-                    final int position = data.getExtras().getInt(GalleryDetailActivity.EXTRA_POSITION);
-                    viewHolder.setPhotoPosition(position);
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-
-        }
-    }
-
-    private void openGalleryDetail(int position, @NonNull Photo photo) {
-        GalleryDetailActivity.launch(this, position, RC_GALLERY_DETAIL);
     }
 
     private void subscribe(@NonNull GalleryListViewModel viewModel) {
@@ -121,6 +166,7 @@ public class GalleryListActivity extends AppCompatActivity {
                         viewHolder.toggleRefreshingVisible(false);
                         break;
                     case FAILED:
+                        if (state.getThrowable() != null) { openError(state.getThrowable(), ERC_INITIAL); }
                         viewHolder.toggleRefreshingVisible(false);
                         Timber.w(state.getThrowable());
                         break;
@@ -139,6 +185,7 @@ public class GalleryListActivity extends AppCompatActivity {
                         viewHolder.getGallery().toggleFooterProgressIndicatorVisible(false);
                         break;
                     case FAILED:
+                        if (state.getThrowable() != null) { openError(state.getThrowable(), ERC_MORE); }
                         viewHolder.getGallery().toggleFooterProgressIndicatorVisible(false);
                         Timber.w(state.getThrowable());
                         break;
@@ -148,6 +195,6 @@ public class GalleryListActivity extends AppCompatActivity {
         viewModel.getNetworkStateLiveData().observe(this, networkStateObserver);
 
         final Observer<PagedList<Photo>> photosObserver = pagedList -> viewHolder.getGallery().submitList(pagedList);
-        LiveDataUtil.reObserve(viewModel.getPagedListLiveData(), this, photosObserver);
+        viewModel.getPagedListLiveData().observe(this, photosObserver);
     }
 }
