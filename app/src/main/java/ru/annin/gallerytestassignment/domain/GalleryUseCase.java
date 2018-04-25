@@ -29,7 +29,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import ru.annin.gallerytestassignment.data.entity.Photo;
-import ru.annin.gallerytestassignment.data.repository.Listing;
+import ru.annin.gallerytestassignment.data.repository.common.PagedListing;
 import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
 
 /**
@@ -37,23 +37,23 @@ import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
  */
 public class GalleryUseCase {
 
+    private static final int PAGE_SIZE = 10;
+
     private final PhotoRepository photoRepository;
-    private MutableLiveData<Listing<Photo>> listingLiveData;
+    private MutableLiveData<PagedListing<Photo>> listingLiveData;
 
     public GalleryUseCase(@NonNull PhotoRepository photoRepository) {
         this.photoRepository = photoRepository;
         listingLiveData = new MutableLiveData<>();
     }
 
-    @NonNull
-    public LiveData<Listing<Photo>> fetchPhoto(@NonNull String query, int pageSize) {
-        final Listing<Photo> listing = photoRepository.listPhoto(query, pageSize);
+    public void fetchPhoto(@NonNull String query) {
+        final PagedListing<Photo> listing = photoRepository.listPhoto(query, PAGE_SIZE);
         listingLiveData.postValue(listing);
-        return listingLiveData;
     }
 
     @NonNull
-    public LiveData<Listing<Photo>> getListingLiveData() {
+    public LiveData<PagedListing<Photo>> getListingLiveData() {
         return listingLiveData;
     }
 }

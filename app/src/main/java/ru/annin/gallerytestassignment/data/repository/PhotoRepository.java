@@ -27,6 +27,7 @@ package ru.annin.gallerytestassignment.data.repository;
 import android.support.annotation.NonNull;
 
 import ru.annin.gallerytestassignment.data.entity.Photo;
+import ru.annin.gallerytestassignment.data.repository.common.PagedListing;
 
 /**
  * @author Pavel Annin.
@@ -34,5 +35,5 @@ import ru.annin.gallerytestassignment.data.entity.Photo;
 public interface PhotoRepository {
 
     @NonNull
-    Listing<Photo> listPhoto(@NonNull String query, int pageSize);
+    PagedListing<Photo> listPhoto(@NonNull String query, int pageSize);
 }

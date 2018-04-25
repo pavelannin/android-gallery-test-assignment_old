@@ -30,11 +30,12 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import ru.annin.gallerytestassignment.data.entity.Photo;
 import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
-import ru.annin.gallerytestassignment.data.repository.Listing;
 import ru.annin.gallerytestassignment.data.repository.PhotoRepository;
+import ru.annin.gallerytestassignment.data.repository.common.PagedListing;
 
 /**
  * @author Pavel Annin.
@@ -50,11 +51,19 @@ public class PhotoByPageRepository implements PhotoRepository {
     @MainThread
     @NonNull
     @Override
-    public Listing<Photo> listPhoto(@NonNull String query, int pageSize) {
+    public PagedListing<Photo> listPhoto(@NonNull String query, int pageSize) {
         final PhotoDataSourceFactory factory = new PhotoDataSourceFactory(api, query);
-        final LiveData<PagedList<Photo>> livePagedList = new LivePagedListBuilder<>(factory, pageSize)
+
+        final PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setInitialLoadSizeHint(pageSize)
+                .setPageSize(pageSize)
                 .build();
-        return new Listing<>(
+
+        final LiveData<PagedList<Photo>> livePagedList = new LivePagedListBuilder<>(factory, config)
+                .build();
+
+        return new PagedListing<>(
                 livePagedList,
                 Transformations.switchMap(factory.getSourceLiveData(), PhotoPageDataSource::getInitialLoad),
                 Transformations.switchMap(factory.getSourceLiveData(), PhotoPageDataSource::getNetworkState),

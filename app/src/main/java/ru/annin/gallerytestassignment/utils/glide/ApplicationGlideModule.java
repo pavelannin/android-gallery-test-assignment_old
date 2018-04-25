@@ -22,11 +22,13 @@
  * SOFTWARE.
  */
 
-package ru.annin.gallerytestassignment.data.repository;
+package ru.annin.gallerytestassignment.utils.glide;
+
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.module.AppGlideModule;
 
 /**
  * @author Pavel Annin.
  */
-public enum Status {
-    RUNNING, SUCCESS, FAILED
-}
+@GlideModule
+public final class ApplicationGlideModule extends AppGlideModule{ /* Empty. */ }
