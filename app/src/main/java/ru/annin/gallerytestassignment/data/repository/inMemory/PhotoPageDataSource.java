@@ -28,13 +28,16 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.paging.PageKeyedDataSource;
 import android.support.annotation.NonNull;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import ru.annin.gallerytestassignment.data.entity.Photo;
+import ru.annin.gallerytestassignment.data.exception.ApiException;
 import ru.annin.gallerytestassignment.data.remote.UnsplashApi;
+import ru.annin.gallerytestassignment.data.remote.response.ErrorResponse;
 import ru.annin.gallerytestassignment.data.remote.response.PhotosResponse;
-import ru.annin.gallerytestassignment.data.repository.NetworkState;
+import ru.annin.gallerytestassignment.data.repository.common.NetworkState;
 
 /**
  * @author Pavel Annin.
@@ -67,8 +70,20 @@ public class PhotoPageDataSource extends PageKeyedDataSource<Integer, Photo> {
                     callback.onResult(photoResponse.getPhotos(), null, page + 1);
                     initialLoad.postValue(NetworkState.loaded());
                     retry = null;
-                } else  {
-                    initialLoad.postValue(NetworkState.failure(new RuntimeException("body is null")));
+                } else {
+                    final ResponseBody errorBody = response.errorBody();
+                    final Throwable throwable;
+                    if (errorBody != null) {
+                        final ErrorResponse errorResponse = api.responseBodyConverter(ErrorResponse.class, errorBody);
+                        if (errorResponse != null) {
+                            throwable = new ApiException(errorResponse);
+                        } else {
+                            throwable = new RuntimeException("Error parse error messages");
+                        }
+                    } else {
+                        throwable = new RuntimeException("body is null");
+                    }
+                    initialLoad.postValue(NetworkState.failure(throwable));
                     retry = () -> loadInitial(params, callback);
                 }
             }
@@ -99,7 +114,19 @@ public class PhotoPageDataSource extends PageKeyedDataSource<Integer, Photo> {
                     networkState.postValue(NetworkState.loaded());
                     retry = null;
                 } else  {
-                    networkState.postValue(NetworkState.failure(new RuntimeException("body is null")));
+                    final ResponseBody errorBody = response.errorBody();
+                    final Throwable throwable;
+                    if (errorBody != null) {
+                        final ErrorResponse errorResponse = api.responseBodyConverter(ErrorResponse.class, errorBody);
+                        if (errorResponse != null) {
+                            throwable = new ApiException(errorResponse);
+                        } else {
+                            throwable = new RuntimeException("Error parse error messages");
+                        }
+                    } else {
+                        throwable = new RuntimeException("body is null");
+                    }
+                    initialLoad.postValue(NetworkState.failure(throwable));
                     retry = () -> loadAfter(params, callback);
                 }
             }

@@ -24,18 +24,32 @@
 
 package ru.annin.gallerytestassignment.data.remote;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLContext;
+
+import okhttp3.ConnectionSpec;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.ResponseBody;
+import okhttp3.TlsVersion;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import ru.annin.gallerytestassignment.data.remote.response.PhotosResponse;
+import ru.annin.gallerytestassignment.data.remote.ssl.Tls12SocketFactory;
+import timber.log.Timber;
 
 /**
  * @author Pavel Annin.
@@ -51,16 +65,28 @@ public class UnsplashApi implements UnsplashService {
     private static final long TIMEOUT_READ_SEC = 60L;
     private static final long TIMEOUT_WRITE_SEC = 2 * 60L;
 
+    private final Retrofit retrofit;
     private final UnsplashService service;
 
     public UnsplashApi(boolean isDebugging, @NonNull String baseUrl, @NonNull String token) {
-        service = configRetrofit(isDebugging, baseUrl, token).create(UnsplashService.class);
+        retrofit = configRetrofit(isDebugging, baseUrl, token);
+        service = retrofit.create(UnsplashService.class);
     }
 
     @NonNull
     @Override
     public Call<PhotosResponse> getPhotos(@NonNull String query, int perPage, int page) {
         return service.getPhotos(query, perPage, page);
+    }
+
+    @Nullable
+    public <T> T responseBodyConverter(@NonNull Class<T> clazz, @NonNull ResponseBody body) {
+        final Converter<ResponseBody, T> converter = retrofit.responseBodyConverter(clazz, new Annotation[0]);
+        try {
+            return converter.convert(body);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @NonNull
@@ -74,13 +100,13 @@ public class UnsplashApi implements UnsplashService {
 
     @NonNull
     private OkHttpClient configHttpClient(boolean isDebugging, @NonNull String token) {
-        return new OkHttpClient.Builder()
+        final OkHttpClient.Builder okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(TIMEOUT_SEC, TimeUnit.SECONDS)
                 .readTimeout(TIMEOUT_READ_SEC, TimeUnit.SECONDS)
                 .writeTimeout(TIMEOUT_WRITE_SEC, TimeUnit.SECONDS)
                 .addInterceptor(configHeaderInterceptor(token))
-                .addInterceptor(configLoggingInterceptor(isDebugging))
-                .build();
+                .addInterceptor(configLoggingInterceptor(isDebugging));
+        return enableTls12(okHttpClient).build();
     }
 
     @NonNull
@@ -102,5 +128,32 @@ public class UnsplashApi implements UnsplashService {
                 : HttpLoggingInterceptor.Level.NONE;
         interceptor.setLevel(level);
         return interceptor;
+    }
+
+    @SuppressWarnings("deprecation")
+    @NonNull
+    private OkHttpClient.Builder enableTls12(@NonNull OkHttpClient.Builder builder) {
+        // https://developer.android.com/reference/javax/net/ssl/SSLSocket
+        if (Build.VERSION.SDK_INT >= 16 && Build.VERSION.SDK_INT < 20) {
+            try {
+                final SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+                sslContext.init(null, null, null);
+                builder.sslSocketFactory(new Tls12SocketFactory(sslContext.getSocketFactory()));
+
+                final ConnectionSpec connectionSpec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                        .tlsVersions(TlsVersion.TLS_1_2)
+                        .build();
+
+                final List<ConnectionSpec> specs = new ArrayList<>();
+                specs.add(connectionSpec);
+                specs.add(ConnectionSpec.COMPATIBLE_TLS);
+                specs.add(ConnectionSpec.CLEARTEXT);
+
+                builder.connectionSpecs(specs);
+            } catch (Exception e) {
+                Timber.w(e, "Error while setting TLS 1.2");
+            }
+        }
+        return builder;
     }
 }
