@@ -18,5 +18,7 @@
     <color name="white">#FFFFFF</color>
     <color name="silver">#BDBDBD</color>
     <color name="black_alpha_20">#cd000000</color>
+    <color name="black">#000</color>
     <color name="cinnabar">#E53935</color>
+    <color name="transparent">#00000000</color>
 </resources>
